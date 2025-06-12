@@ -1,0 +1,217 @@
+<?php
+
+namespace App\Http\Controllers\Admin\Guru;
+
+use App\Http\Controllers\Controller;
+use App\Models\Guru;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\GuruExport;
+use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
+class GuruController extends Controller
+{
+    public function index()
+    {
+        $search = request()->query('search');
+        $gurus = Guru::when($search, function ($query, $search) {
+            return $query
+                ->where('username', 'like', '%' . $search . '%')
+                ->orWhere('nip', 'like', '%' . $search . '%')
+                ->orWhere('email', 'like', '%' . $search . '%');
+        })->paginate(10);
+
+        return view('admin.data-guru.index', compact('gurus'));
+    }
+
+    public function create()
+    {
+        return view('admin.data-guru.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'username'            => 'required|string|max:255',
+            'nip'                 => 'required|numeric|unique:gurus,nip',
+            'password'            => 'required|string|min:8',
+            'jenis_kelamin'       => 'required|in:Laki-Laki,Perempuan',
+            'agama'               => 'required|in:Islam,Kristen,Katolik,Buddha,Hindu,Konghuchu',
+            'tempat_lahir'        => 'required|string|max:255',
+            'tanggal_lahir'       => 'required|date',
+            'status'              => 'required|in:Aktif,Tidak Aktif',
+            'alamat'              => 'required|string',
+            'no_telepon'          => 'required|numeric',
+            'email'               => 'required|email|unique:gurus,email',
+            'jabatan'             => 'required|in:ASN,Honorer,Magang,Kepala Sekolah,Waka Kesiswaan,Waka Kurikulum,Tata Usaha',
+            'pendidikan_terakhir' => 'required|in:Diploma,Sarjana,Megister,Doktor',
+            'tahun_masuk'         => 'required|integer',
+            'foto_profil'         => 'nullable|image|mimes:jpg,jpeg,png|max:4096',
+        ]);
+
+        $file = $request->file('foto_profil');
+        $filename = 'foto-guru-' . time() . '.' . $file->getClientOriginalExtension();
+        $targetPath = realpath(base_path('../public/app')) . '/foto-guru';
+        $file->move($targetPath, $filename);
+
+        $validateData = [
+            'username' => $request->input('username'),
+            'nip' => $request->input('nip'),
+            'password' => bcrypt($request->input('password')),
+            'jenis_kelamin' => $request->input('jenis_kelamin'),
+            'agama' => $request->input('agama'),
+            'tempat_lahir' => $request->input('tempat_lahir'),
+            'tanggal_lahir' => $request->input('tanggal_lahir'),
+            'status' => $request->input('status'),
+            'alamat' => $request->input('alamat'),
+            'no_telepon' => $request->input('no_telepon'),
+            'email' => $request->input('email'),
+            'jabatan' => $request->input('jabatan'),
+            'pendidikan_terakhir' => $request->input('pendidikan_terakhir'),
+            'tahun_masuk' => $request->input('tahun_masuk'),
+            'foto_profil' => $filename
+        ];
+
+        Guru::create($validateData);
+
+
+        return redirect('admin/guru')->with('success', 'Data guru berhasil disimpan.');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048',
+        ]);
+
+        $file = $request->file('file');
+        $spreadsheet = IOFactory::load($file->getPathname());
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray();
+
+        foreach ($rows as $index => $row) {
+            if ($index == 0) continue;
+
+            if (!is_numeric($row[1])) {
+                return redirect()->back()->with('error', 'NIP harus berupa angka pada baris ' . ($index + 1));
+            }
+
+            if (!is_numeric($row[9])) {
+                return redirect()->back()->with('error', 'No telepon harus berupa angka pada baris ' . ($index + 1));
+            }
+
+            if (!filter_var($row[10], FILTER_VALIDATE_EMAIL)) {
+                return redirect()->back()->with('error', 'Email tidak valid pada baris ' . ($index + 1));
+            }
+
+            $serialDate = (int)$row[6];
+            $tanggalLahir = date('Y-m-d', strtotime('1899-12-30 + ' . $serialDate . ' days'));
+
+            $guru = Guru::create([
+                'username'            => $row[0],
+                'nip'                 => $row[1],
+                'password'            => bcrypt($row[2]),
+                'jenis_kelamin'       => $row[3] == 'Laki-Laki' ? 'Laki-Laki' : 'Perempuan',
+                'agama'               => in_array($row[4], ['Islam', 'Kristen', 'Katolik', 'Buddha', 'Hindu', 'Konghuchu']) ? $row[4] : 'Lainnya',
+                'tempat_lahir'        => $row[5],
+                'tanggal_lahir'       => $tanggalLahir,
+                'alamat'              => $row[7],
+                'no_telepon'          => $row[8],
+                'email'               => $row[9],
+                'jabatan'             => in_array($row[11], ['ASN', 'Honorer', 'Magang', 'Kepala Sekolah', 'Waka Kesiswaan', 'Waka Kurikulum', 'Tata Usaha']) ? $row[11] : 'Lainnya',
+                'pendidikan_terakhir' => in_array($row[12], ['Diploma', 'Sarjana', 'Megister', 'Doktor']) ? $row[12] : 'Lainnya',
+                'tahun_masuk'         => $row[13],
+                'foto_profil'         => $row[14],
+            ]);
+        }
+        return redirect('admin/guru')->with('success', 'Data guru berhasil diimpor.');
+    }
+
+    public function export()
+    {
+        return Excel::download(new GuruExport, 'data-guru.xlsx');
+    }
+
+    public function show(string $id)
+    {
+        $guru = Guru::findOrFail($id);
+        return view('admin.data-guru.detail', compact('guru'));
+    }
+
+    public function edit(string $id)
+    {
+        $guru = Guru::findOrFail($id);
+        return view('admin.data-guru.edit', compact('guru'));
+    }
+
+    public function update(Request $request, string $id)
+    {
+        $guru = Guru::findOrFail($id);
+        $request->validate([
+            'username'            => 'required|string|max:255',
+            'nip'                 => 'required|numeric|unique:gurus,nip,' . $guru->id,
+            'password'            => 'nullable|string|min:8',
+            'jenis_kelamin'       => 'required|in:Laki-Laki,Perempuan',
+            'agama'               => 'required|in:Islam,Kristen,Katolik,Buddha,Hindu,Konghuchu',
+            'tempat_lahir'        => 'required|string|max:255',
+            'tanggal_lahir'       => 'required|date',
+            'status'              => 'required|in:Aktif,Tidak Aktif',
+            'alamat'              => 'required|string',
+            'no_telepon'          => 'required|numeric',
+            'email'               => 'required|email|string:gurus,email,' . $guru->id,
+            'jabatan'             => 'nullable|in:ASN,Honorer,Magang,Kepala Sekolah,Waka Kesiswaan,Waka Kurikulum,Tata Usaha',
+            'pendidikan_terakhir' => 'required|in:Diploma,Sarjana,Megister,Doktor',
+            'tahun_masuk'         => 'required|integer',
+            'foto_profil'         => 'nullable|image|mimes:jpg,jpeg,png|max:4096',
+        ]);
+
+        $validateData = [
+            'username' => $request->input('username'),
+            'nip' => $request->input('nip'),
+            'jenis_kelamin' => $request->input('jenis_kelamin'),
+            'agama' => $request->input('agama'),
+            'tempat_lahir' => $request->input('tempat_lahir'),
+            'tanggal_lahir' => $request->input('tanggal_lahir'),
+            'status' => $request->input('status'),
+            'alamat' => $request->input('alamat'),
+            'no_telepon' => $request->input('no_telepon'),
+            'email' => $request->input('email'),
+            'jabatan' => $request->input('jabatan'),
+            'pendidikan_terakhir' => $request->input('pendidikan_terakhir'),
+            'tahun_masuk' => $request->input('tahun_masuk'),
+        ];
+
+        $targetPath = realpath(base_path('../public/app')) . '/foto-guru';
+
+        if ($request->filled('password')) {
+            $validateData['password'] = bcrypt($request->input('password'));
+        }
+
+        if ($request->hasFile('foto_profil')) {
+            $file = $request->file('foto_profil');
+            $filename = 'foto-guru-' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move($targetPath, $filename);
+
+            $validateData['foto_profil'] = $filename;
+        }
+
+
+        $guru->update($validateData);
+
+        return redirect('admin/guru')->with('success', 'Data guru berhasil diperbarui.');
+    }
+
+    public function destroy(string $id)
+    {
+        $guru = Guru::findOrFail($id);
+
+        if ($guru->foto_profil) {
+            Storage::disk('public')->delete($guru->foto_profil);
+        }
+
+        $guru->delete();
+
+        return redirect()->back()->with('success', 'Data guru berhasil dihapus.');
+    }
+}
