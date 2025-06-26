@@ -13,14 +13,14 @@
 
             <div class="row">
                 <!-- Left Column: Kode, Nama, Deskripsi -->
+                <input type="text" name="sekolah_id" value="{{auth('admin')->user()->sekolah_id}}" hidden>
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="kode_mapel" class="form-label">Kode Mapel</label>
                         <input type="text" class="form-control @error('kode_mapel') is-invalid @enderror"
                             id="kode_mapel" name="kode_mapel" value="{{ old('kode_mapel', $mapel->kode_mapel) }}"
                             required>
-                        @error('kode_mapel')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                        @error('kode_mapel') <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 

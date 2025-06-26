@@ -14,9 +14,11 @@ class DashboardController extends Controller
 {
     public function dashboard()
     {
-        $totalSiswa = Siswa::count();
-        $totalGuru = Guru::count();
-        $totalKelas = Kelas::count();
+        $sekolahId = auth('admin')->user()->sekolah_id;
+
+        $totalSiswa = Siswa::where('sekolah_id', $sekolahId)->count();
+        $totalGuru = Guru::where('sekolah_id', $sekolahId)->count();
+        $totalKelas = Kelas::where('sekolah_id', $sekolahId)->count();
         return view('admin.dashboard', compact('totalSiswa', 'totalGuru', 'totalKelas'));
     }
 

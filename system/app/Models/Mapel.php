@@ -11,6 +11,7 @@ class Mapel extends Model
     protected $keyType = 'int';
     public $incrementing = false;
     protected $fillable = [
+        'sekolah_id',
         'guru_id',
         'kode_mapel',
         'nama_mapel',

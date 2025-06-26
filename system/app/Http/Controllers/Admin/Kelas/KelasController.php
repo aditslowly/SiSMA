@@ -13,7 +13,10 @@ class KelasController extends Controller
 {
     public function index()
     {
-        $kelas = Kelas::with('wali_kelas')->paginate(10);
+        $sekolahId = auth('admin')->user()->sekolah_id;
+
+        $kelas = Kelas::where('sekolah_id', $sekolahId)
+            ->when('wali_kelas_id')->paginate(10);
         return view('admin.kelas.index', compact('kelas'));
     }
 
@@ -26,6 +29,7 @@ class KelasController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'sekolah_id' => 'required|exists:sekolahs,id',
             'nama_kelas'=> 'required|string|max:255',
             'wali_kelas_id'=> 'required|exists:gurus,id',
             'tingkat'=> 'required|in:X,XI,XII',
@@ -33,6 +37,7 @@ class KelasController extends Controller
         ]);
 
         Kelas::create([
+            'sekolah_id' => $request->sekolah_id,
             'nama_kelas' => $request->nama_kelas,
             'wali_kelas_id' => $request->wali_kelas_id,
             'tingkat' => $request->tingkat,
@@ -57,8 +62,10 @@ class KelasController extends Controller
 
     public function update(Request $request, $id)
     {
+
         $request->validate([
             'nama_kelas'=> 'required|string|max:255',
+            'sekolah_id' => 'required|exists:sekolahs,id',
             'wali_kelas_id'=> 'required|exists:gurus,id',
             'tingkat'=> 'required|in:X,XI,XII',
             'jurusan'=> 'required|in:IPA,IPS',
@@ -66,6 +73,7 @@ class KelasController extends Controller
 
         $kelas = Kelas::findOrFail($id);
         $kelas->update([
+            'sekolah_id' => $request->sekolah_id,
             'nama_kelas' => $request->nama_kelas,
             'wali_kelas_id' => $request->wali_kelas_id,
             'tingkat' => $request->tingkat,

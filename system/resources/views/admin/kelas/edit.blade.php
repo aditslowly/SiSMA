@@ -23,6 +23,7 @@
                         </div>
                     @endif
 
+                    <input type="text" name="sekolah_id" value="{{auth('admin')->user()->sekolah_id}}" hidden/>
                     <div class="mb-3">
                         <label for="nama_kelas" class="form-label">Nama Kelas</label>
                         <input type="text" name="nama_kelas" class="form-control"

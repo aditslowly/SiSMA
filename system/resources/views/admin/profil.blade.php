@@ -46,7 +46,7 @@
                         alt="Foto Profil"
                         class="rounded-circle border"
                         style="width: 150px; height: 150px; object-fit: cover;">
-                    <p class="mt-2 text-muted">Preview foto anda</p>
+                    <p class="mt-2 text-muted uppercase">{{Auth::user()->username}}</p>
                 </div>
 
                 <!-- Form Update Profil -->

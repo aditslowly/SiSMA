@@ -10,7 +10,9 @@ class Guru extends Authenticatable
     protected $table = 'gurus';
     protected $keyType = 'string';
     public $incrementing = false;
+    protected $primaryKey = 'id';
     protected $fillable = [
+        'sekolah_id',
         'username',
         'nip',
         'password',

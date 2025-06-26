@@ -14,16 +14,14 @@ class MapelController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $sekolahId = auth('admin')->user()->sekolah_id;
 
-        $mapels = Mapel::with('gurus')
-            ->when($search, function ($query, $search) {
-                return $query
-                    ->where('kode_mapel', 'like', '%' . $search . '%')
-                    ->orWhere('nama_mapel', 'like', '%' . $search . '%')
-                    ->orWhereHas('guru', function ($q) use ($search) {
-                        $q->where('username', 'like', '%' . $search . '%');
-                    });
-            })->paginate(10);
+        $mapels = Mapel::where('sekolah_id', $sekolahId) -> when($search, function ($query, $search){
+            return $query -> where(function ($q) use ($search) {
+                $q->where('kode_mapel', 'like', '%' . $search . '%')
+                    ->orWhere('nama_mapel', 'like', '%' . $search . '%');
+            });
+        })->paginate(10);
         return view('admin.mata-pelajaran.index', compact('mapels', 'search'));
     }
 
@@ -36,6 +34,7 @@ class MapelController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'sekolah_id' => 'required|exists:sekolahs,id',
             'kode_mapel' => 'required|string|max:255|unique:mapels,kode_mapel',
             'nama_mapel' => 'required|string|max:255',
             'deskripsi' => 'nullable|string|max:1000',
@@ -43,6 +42,7 @@ class MapelController extends Controller
         ]);
 
         Mapel::create([
+            'sekolah_id' => $request->sekolah_id,
             'kode_mapel' => $request->kode_mapel,
             'nama_mapel' => $request->nama_mapel,
             'deskripsi' => $request->deskripsi,

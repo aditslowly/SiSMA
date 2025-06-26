@@ -5,6 +5,8 @@
         <form action="{{ url('admin/guru') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
+            <input type="text" name="sekolah_id" id="sekolah_id" value="{{auth('admin')->user()->sekolah_id}}" hidden/>
+
             @if ($errors)
                 @foreach ($errors->all() as $key => $message)
                     <div class="alert alert-danger">{{ $message }}</div>
@@ -95,11 +97,10 @@
                             <label for="jabatan" class="form-label">Jabatan</label>
                             <select name="jabatan" id="jabatan" class="form-select" required>
                                 <option value="" disabled {{ old('jabatan') ? '' : 'selected' }}>Pilih Jabatan</option>
-                                <option value="ASN" {{ old('jabatan') == 'ASN' ? 'selected' : '' }}>ASN</option>
-                                <option value="Honorer" {{ old('jabatan') == 'Honorer' ? 'selected' : '' }}>Honorer</option>
-                                <option value="Magang" {{ old('jabatan') == 'Magang' ? 'selected' : '' }}>Magang</option>
+                                <option value="Kepala Sekolah" {{old('jabatan') == 'Kepala Sekolah' ? 'selected' : ''}}>Kepala Sekolah</option>
                                 <option value="Waka Kesiswaan" {{ old('jabatan') == 'Waka Kesiswaan' ? 'selected' : '' }}>Waka Kesiswaan</option>
                                 <option value="Waka Kurikulum" {{ old('jabatan') == 'Waka Kurikulum' ? 'selected' : '' }}>Waka Kurikulum</option>
+                                <option value="Guru" {{ old('jabatan') == 'Guru' ? 'selected' : '' }}>Guru</option>
                                 <option value="Tata Usaha" {{ old('jabatan') == 'Tata Usaha' ? 'selected' : '' }}>Tata Usaha</option>
                             </select>
                         </div>

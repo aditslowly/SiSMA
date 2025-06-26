@@ -1,7 +1,7 @@
 <x-admin>
     <div class="container mt-4">
         <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">
+            <div class="card-header text-white">
                 <h4 class="mb-0">Tambah Kelas Baru</h4>
             </div>
             <div class="card-body">
@@ -27,6 +27,7 @@
                     @endif
 
                     {{-- Nama Kelas --}}
+                    <input type="text" name="sekolah_id" value="{{auth('admin')->user()->sekolah_id}}" hidden/>
                     <div class="mb-3">
                         <label for="nama_kelas" class="form-label">Nama Kelas</label>
                         <input type="text"
@@ -82,6 +83,9 @@
 
                     {{-- Tombol Aksi --}}
                     <div class="mt-4 d-flex justify-content-end gap-2">
+                        <a href="{{url('admin/kelas')}}" class="btn btn-primary">
+                            <i class="ti ti-arrow-left"></i> Kembali
+                        </a>
                         <button type="submit" class="btn btn-success">
                             <i class="ti ti-check"></i> Simpan
                         </button>

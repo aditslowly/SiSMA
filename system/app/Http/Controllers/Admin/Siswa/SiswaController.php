@@ -5,22 +5,29 @@ namespace App\Http\Controllers\Admin\Siswa;
 use App\Exports\SiswaExport;
 use App\Http\Controllers\Controller;
 use App\Models\Siswa;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class SiswaController extends Controller
 {
     public function index()
     {
         $search = request()->query('search');
-        $siswa = Siswa::when($search, function ($query, $search) {
-            return $query
-                ->where('nisn', 'like', '%' . $search . '%')
-                ->orWhere('username', 'like', '%' . $search . '%');
-        })->paginate(10);
+        $sekolahId = auth('admin')->user()->sekolah_id;
+
+        $siswa = Siswa::where('sekolah_id', $sekolahId)
+            ->when($search, function ($query, $search) {
+                return $query
+                    ->where(function ($q) use ($search) {
+                        $q->where('nisn', 'like', '%' . $search . '%')
+                            ->orWhere('nis', 'like', '%' . $search . '%')
+                            ->orWhere('nama_siswa', 'like', '%'. $search . '%');
+                    });
+            })->paginate(10);
 
 
         return view('admin.data-siswa.index', compact('siswa'));
@@ -34,10 +41,10 @@ class SiswaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nisn' => 'required|integer',
-            'nis' => 'required|integer',
+            'sekolah_id' => 'required|exists:sekolahs,id',
+            'nisn' => 'required|string',
+            'nis' => 'required|string',
             'nama_siswa' => 'required|string|max:225',
-            'kelas' => 'required|string',
             'jenis_pendaftaran' => 'required|string|in:Peserta Didik Baru,Pindahan',
             'jalur_pendaftaran' => 'required|string|in:Zonasi,Afirmasi,Perpindahan Orang Tua,Prestasi,Mandiri',
             'tanggal_masuk' => 'required|date',
@@ -51,8 +58,8 @@ class SiswaController extends Controller
             'tempat_lahir' => 'required|string',
             'tanggal_lahir' => 'required|date',
             'alamat' => 'required|string',
-            'rt' => 'required|integer',
-            'rw' => 'required|integer',
+            'rt' => 'required|string',
+            'rw' => 'required|string',
             'dusun' => 'required|string',
             'desa_kelurahan' => 'required|string|max:255',
             'provinsi' => 'required|string|max:255',
@@ -65,9 +72,9 @@ class SiswaController extends Controller
         ]);
 
         $validateData = $request->only([
+            'sekolah_id',
             'nisn',
             'nis',
-            'kelas',
             'nama_siswa',
             'jenis_pendaftaran',
             'jalur_pendaftaran',
@@ -80,6 +87,7 @@ class SiswaController extends Controller
             'jenis_kelamin',
             'agama',
             'tanggal_lahir',
+            'tempat_lahir',
             'alamat',
             'rt',
             'rw',
@@ -90,7 +98,6 @@ class SiswaController extends Controller
             'kecamatan',
             'telepon',
             'password',
-            'foto',
         ]);
 
         $targetPath = realpath(base_path('../public/app')) . '/foto-siswa';
@@ -105,6 +112,18 @@ class SiswaController extends Controller
         Siswa::create($validateData);
 
         return redirect('admin/siswa')->with('success', 'Data Siswa berhasil ditambahkan.');
+    }
+
+    private function formatTanggal($value) {
+        if (is_numeric($value)) {
+            return Date::excelToDateTimeObject($value)->format('Y-m-d');
+        }
+
+        try {
+            return Carbon::parse($value)->format('Y-m-d');
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     public function import(Request $request)
@@ -123,45 +142,54 @@ class SiswaController extends Controller
             if ($index == 0) continue;
             $data = array_slice($row, 1);
 
+            $jenis_kelamin = null;
             // Validasi jenis kelamin
-            if (isset($row[12]) ){
-                if (strtolower(trim($row[12])) == 'laki-laki') {
+            if (isset($row[11])) {
+                $value = strtolower(trim($row[11]));
+                if ($value === 'laki-laki' || $value === 'l') {
                     $jenis_kelamin = 'Laki-Laki';
-                } elseif (strtolower(trim($row[12])) == 'perempuan') {
+                } elseif ($value === 'perempuan' || $value === 'p') {
                     $jenis_kelamin = 'Perempuan';
-                } else {
-                    $jenis_kelamin = null;
                 }
             }
 
+            if (is_null($jenis_kelamin)) {
+                continue;
+            }
+
+            $existing = Siswa::where('nisn', $row[0])->first();
+            if ($existing) {
+                continue;
+            }
+
             $siswa = Siswa::create([
+                'sekolah_id' => auth('admin')->user()->sekolah_id,
                 'nisn' => $row[0],
                 'nis' => $row[1],
                 'nama_siswa' => $row[2],
-                'kelas' => isset($row[3]) && !empty($row[3]) ? $row[3] : null,
-                'jalur_pendaftaran' => in_array($row[4], ['Zonasi', 'Afirmasi', 'Perpindahan Orang Tua', 'Prestasi', 'Mandiri']) ? $row[4] : 'Zonasi',
-                'jenis_pendaftaran' => $row[5] == 'Peserta Didik Baru' ? 'Peserta Didik Baru' : 'Pindahan',
-                'tanggal_masuk' => $row[6],
-                'status' => $row[7] == 'Aktif' ? 'Aktif' : 'Tidak Aktif',
-                'kebutuhan_khusus' => $row[8] == 'Iya' ? 'Iya' : 'Tidak',
-                'email' => $row[9],
-                'no_kk' => $row[10],
-                'nik' => $row[11],
+                'jalur_pendaftaran' => in_array($row[3], ['Zonasi', 'Afirmasi', 'Perpindahan Orang Tua', 'Prestasi', 'Mandiri']) ? $row[4] : 'Zonasi',
+                'jenis_pendaftaran' => $row[4] == 'Peserta Didik Baru' ? 'Peserta Didik Baru' : 'Pindahan',
+                'tanggal_masuk' => $this->formatTanggal($row[5]),
+                'status' => $row[6] == 'Aktif' ? 'Aktif' : 'Tidak Aktif',
+                'kebutuhan_khusus' => $row[7] == 'Iya' ? 'Iya' : 'Tidak',
+                'email' => $row[8],
+                'no_kk' => $row[9],
+                'nik' => $row[10],
                 'jenis_kelamin' => $jenis_kelamin,
-                'agama' => in_array($row[13], ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu']) ? $row[13] : 'Islam',
-                'tanggal_lahir' => $row[14],
-                'tempat_lahir' => $row[15],
-                'alamat' => $row[16],
-                'rt' => $row[17],
-                'rw' => $row[18],
-                'dusun' => $row[19],
-                'desa_kelurahan' => $row[20],
-                'provinsi' => $row[21],
-                'kabupaten' => $row[22],
-                'kecamatan' => $row[23],
-                'telepon' => $row[24],
-                'password' => isset($row[25]) ? bcrypt($row[25]) : null,
-                'foto' => isset($row[26]) && !empty($row[26]) ? $row[26] : 'belum ada foto',
+                'agama' => in_array($row[12], ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu']) ? $row[12] : 'Islam',
+                'tanggal_lahir' => $this->formatTanggal($row[13]),
+                'tempat_lahir' => $row[14],
+                'alamat' => $row[15],
+                'rt' => $row[16],
+                'rw' => $row[17],
+                'dusun' => $row[18],
+                'desa_kelurahan' => $row[19],
+                'provinsi' => $row[20],
+                'kabupaten' => $row[21],
+                'kecamatan' => $row[22],
+                'telepon' => $row[23],
+                'password' => isset($row[24]) ? bcrypt($row[24]) : null,
+                'foto' => isset($row[25]) && !empty($row[25]) ? $row[25] : 'belum ada foto',
             ]);
         }
 
@@ -191,8 +219,9 @@ class SiswaController extends Controller
         $siswa = Siswa::findOrFail($id);
 
         $request->validate([
-            'nisn' => 'required|integer',
-            'nis' => 'required|integer',
+            'sekolah_id' => 'required|exists:sekolahs,id',
+            'nisn' => 'required|string',
+            'nis' => 'required|string',
             'nama_siswa' => 'required|string|max:225',
             'jenis_pendaftaran' => 'required|string|in:Peserta Didik Baru,Pindahan',
             'jalur_pendaftaran' => 'required|string|in:Zonasi,Afirmasi,Perpindahan Orang Tua,Prestasi,Mandiri',
@@ -207,8 +236,8 @@ class SiswaController extends Controller
             'tempat_lahir' => 'required|string',
             'tanggal_lahir' => 'required|date',
             'alamat' => 'required|string',
-            'rt' => 'required|integer',
-            'rw' => 'required|integer',
+            'rt' => 'required|string',
+            'rw' => 'required|string',
             'dusun' => 'required|string',
             'desa_kelurahan' => 'required|string',
             'provinsi' => 'required|string',
@@ -216,13 +245,14 @@ class SiswaController extends Controller
             'kecamatan' => 'required|string',
             'telepon' => 'required|string',
             'password' => 'nullable|min:6',
-            'foto' => 'required|image|mimes:jpg,jpeg,png|max:4096',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:4096',
 
         ]);
 
         $targetPath = realpath(base_path('../public/app')) . '/data-siswa';
 
         $validateData = $request->only([
+            'sekolah_id',
             'nisn',
             'nis',
             'nama_siswa',

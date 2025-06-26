@@ -14,7 +14,6 @@ class SiswaImport implements ToModel, WithHeadingRow
             'nisn' => $row['NISN'],
             'nis' => $row['NIS'],
             'nama_siswa' => $row['Nama Siswa'],
-            'kelas' => $row['Kelas'],
             'jenis_pendaftaran' => $row['Jenis Pendaftaran'],
             'jalur_pendaftaran' => $row['Jalur Pendaftaran'],
             'tanggal_masuk' => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['Tanggal Masuk']),

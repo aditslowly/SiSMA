@@ -1,4 +1,24 @@
 <x-admin>
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                title: 'Selamat Datang Kembali!',
+                text: '{{session('success')}}',
+                icon: 'success',
+                confirmButtonText: 'OK',
+            })
+        </script>
+    @endif
+
+    @if (session('error'))
+        <script>
+            title: 'Gagal Masuk!',
+            text: '{{session('error')}}',
+            icon: 'error',
+            confirmButtonText: 'Coba Lagi',
+        </script>
+    @endif
+
     <div class="container-fluid p-4">
         <div class="row g-3 justify-content-center">
             <div class="row mt-5 justify-content-center">
@@ -49,4 +69,6 @@
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </x-admin>

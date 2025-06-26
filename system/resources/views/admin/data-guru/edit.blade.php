@@ -15,6 +15,7 @@
             <div class="card p-4">
                 <!-- Foto Profil dengan preview -->
                 <div class="mb-4 text-center">
+                    <input type="text" name="sekolah_id" value="{{auth('admin')->user()->sekolah_id}}" hidden>
                     <label for="foto_profil" class="form-label fw-bold">Foto Profil</label>
                     <div>
                         <img id="previewFoto"
@@ -97,11 +98,10 @@
                             <label for="jabatan" class="form-label">Jabatan</label>
                             <select name="jabatan" id="jabatan" class="form-select" required>
                                 <option value="" disabled {{ old('jabatan', $guru->jabatan) ? '' : 'selected' }}>Pilih Jabatan</option>
-                                <option value="ASN" {{ old('jabatan', $guru->jabatan) == 'ASN' ? 'selected' : '' }}>ASN</option>
-                                <option value="Honorer" {{ old('jabatan', $guru->jabatan) == 'Honorer' ? 'selected' : '' }}>Honorer</option>
-                                <option value="Magang" {{ old('jabatan', $guru->jabatan) == 'Magang' ? 'selected' : '' }}>Magang</option>
+                                <option value="Kepala Sekolah" {{old('jabatan', $guru->jabatan) == 'Kepala Sekolah' ? 'selected' : ''}}>Kepala Sekolah</option>
                                 <option value="Waka Kesiswaan" {{ old('jabatan', $guru->jabatan) == 'Waka Kesiswaan' ? 'selected' : '' }}>Waka Kesiswaan</option>
                                 <option value="Waka Kurikulum" {{ old('jabatan', $guru->jabatan) == 'Waka Kurikulum' ? 'selected' : '' }}>Waka Kurikulum</option>
+                                <option value="Guru" {{old('jabatan', $guru->jabatan) == 'Guru' ? 'selected' : ''}}>Guru</option>
                                 <option value="Tata Usaha" {{ old('jabatan', $guru->jabatan) == 'Tata Usaha' ? 'selected' : '' }}>Tata Usaha</option>
                             </select>
                         </div>

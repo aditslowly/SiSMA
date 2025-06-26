@@ -40,6 +40,7 @@
                         <th>Aksi</th>
                         <th>Tahun Ajaran</th>
                         <th>Status</th>
+                        <th>Dokumen</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -67,10 +68,15 @@
                                     {{ ucfirst($item->status) }}
                                 </span>
                             </td>
+                            <td>
+                                <a href="{{url('public/app/data-dokumen/' . $item->dokumen)}}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                    <i class=" ti ti-printer"></i> Cetak
+                                </a>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="text-center fw-bold text-danger">
+                            <td colspan="10" class="text-center fw-bold">
                                 Data tidak ditemukan.
                             </td>
                         </tr>

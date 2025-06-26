@@ -9,6 +9,7 @@ class Kelas extends Model
     protected $table = 'kelas';
     public $incrementing = false;
     protected $fillable = [
+        'sekolah_id',
         'nama_kelas',
         'tingkat',
         'jurusan',

@@ -13,13 +13,10 @@ class TahunAjar extends Model
     protected $fillable = [
         'sekolah_id',
         'tahun_ajar',
+        'deskripsi',
+        'dokumen',
         'status',
     ];
-
-    public function sekolah()
-    {
-        return $this->belongsTo(Sekolah::class, 'sekolah_id');
-    }
 
     protected static function boot()
     {

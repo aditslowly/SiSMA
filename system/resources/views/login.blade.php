@@ -62,6 +62,8 @@
     </div>
     <script src="{{ url('public/Template') }}/assets/libs/jquery/dist/jquery.min.js"></script>
     <script src="{{ url('public/Template') }}/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </body>
 
 </html>

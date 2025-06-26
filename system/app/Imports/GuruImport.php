@@ -3,9 +3,13 @@
 namespace App\Imports;
 
 use App\Models\Guru;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat\DateFormatter;
 
-class GuruImport implements ToModel
+class GuruImport implements ToModel, WithHeadingRow
 {
     /**
     * @param array $row
@@ -15,6 +19,7 @@ class GuruImport implements ToModel
     public function model(array $row)
     {
         return new Guru([
+            'sekolah_id' => Auth::guard('admin')->user()->sekolah_id,
             'username' => $row[1],
             'nip' => $row[2],
             'jenis_kelamin' => $row[3],
@@ -32,4 +37,19 @@ class GuruImport implements ToModel
             'foto_profil' => $row[15],
         ]);
     }
+
+    private function perseTanggal($value)
+    {
+        if (is_numeric($value)) {
+            return Date::excelToDateTimeObject($value);
+        }
+
+        return DateFormatter('Y-m-d', $value) ?: now();
+    }
+
+    public function headingRow(): int
+    {
+        return 2;
+    }
 }
+

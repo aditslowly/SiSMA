@@ -1,7 +1,7 @@
 <x-admin>
     <div class="container-fluid mt-4">
         <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">
+            <div class="card-header text-white">
                 <h4 class="mb-0">Tambah Mata Pelajaran</h4>
             </div>
             <div class="card-body">
@@ -20,6 +20,7 @@
                     @endif
 
                     <div class="row">
+                        <input type="text" name="sekolah_id" value="{{auth('admin')->user()->sekolah_id}}" hidden/>
                         {{-- Kolom Kiri --}}
                         <div class="col-md-6">
                             {{-- Kode Mapel --}}

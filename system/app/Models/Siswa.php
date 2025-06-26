@@ -10,10 +10,10 @@ class Siswa extends Model
     protected $keyType = 'string';
     protected $table = 'siswas';
     protected $fillable = [
+        'sekolah_id',
         'nisn',
         'nis',
         'nama_siswa',
-        'kelas',
         'jenis_pendaftaran',
         'jalur_pendaftaran',
         'tanggal_masuk',

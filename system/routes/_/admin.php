@@ -59,5 +59,6 @@ Route::get('kelas/export', [KelasController::class, 'export']);
 Route::get('tahun-ajar', [TahunAjarController::class, 'index'])->name('tahun-ajar');
 Route::get('tahun-ajar/create', [TahunAjarController::class, 'create'])->name('tahun-ajar.create');
 Route::post('tahun-ajar', [TahunAjarController::class, 'store'])->name('tahun-ajar.store');
+Route::get('tahun-ajar/edit/{id}', [TahunAjarController::class, 'edit']);
+Route::put('tahun-ajar/{id}', [TahunAjarController::class, 'update']);
 Route::get('tahun-ajar/show/{id}', [TahunAjarController::class, 'show']);
-Route::get('tahun-ajar/edit', [TahunAjarController::class, 'edit']);

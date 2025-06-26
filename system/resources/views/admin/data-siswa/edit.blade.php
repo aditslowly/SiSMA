@@ -13,6 +13,7 @@
             @csrf
             @method('PUT')
             <div class="card mb-3">
+                <input type="text" name="sekolah_id" value="{{auth('admin')->user()->sekolah_id}}" hidden />
                 <div class="row g-0">
                     <!-- Form Input -->
                     <div class="col-md-4">
@@ -200,7 +201,7 @@
                         <div class="card-body w-50 ps-2">
                             <div class="mb-3">
                                 <label for="foto" class="form-label">Foto Siswa</label>
-                                <input type="file" name="foto" id="foto" class="form-control" required
+                                <input type="file" name="foto" id="foto" class="form-control"
                                     onchange="previewImage(event)">
                             </div>
                         </div>

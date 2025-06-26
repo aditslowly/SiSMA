@@ -4,8 +4,9 @@ namespace App\Exports;
 
 use App\Models\Guru;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class GuruExport implements FromCollection
+class GuruExport implements FromCollection, WithHeadings
 {
     /**
     * @return \Illuminate\Support\Collection
@@ -28,7 +29,7 @@ class GuruExport implements FromCollection
         )->get();
     }
 
-    public function headers()
+    public function headings(): array
     {
         return [
             'NIP',

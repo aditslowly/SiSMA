@@ -1,4 +1,4 @@
-''''''<x-admin>
+<x-admin>
     <div class="container-fluid">
         <h4 class="mb-4">Tambah Data Siswa</h4>
         <!-- Tampilkan pesan error jika ada -->
@@ -12,18 +12,19 @@
         <form action="{{ url('admin/siswa') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="card mb-3">
+                <input type="text" name="sekolah_id" class="form-control" value="{{auth('admin')->user()->sekolah_id}}" hidden>
                 <div class="row g-0">
                     <!-- Form Input -->
                     <div class="col-md-4">
                         <div class="card-body">
                             <div class="mb-3">
                                 <label for="nisn" class="form-label">NISN</label>
-                                <input type="number" name="nisn" id="nisn" class="form-control"
+                                <input type="text" name="nisn" id="nisn" class="form-control"
                                     placeholder="Masukkan NISN" required>
                             </div>
                             <div class="mb-3">
                                 <label for="nis" class="form-label">NIS</label>
-                                <input type="number" name="nis" id="nis" class="form-control"
+                                <input type="text" name="nis" id="nis" class="form-control"
                                     placeholder="Masukkan NIS" required>
                             </div>
                             <div class="mb-3">
@@ -33,7 +34,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="jenis_pendaftaran" class="form-label">Jenis Pendaftaran</label>
-                                <select name="jenis_pendaftaran" id="jenis_pendaftaran" class="form-control @error('jenis_pendaftaran') is-invalid @enderror" required>
+                                <select name="jenis_pendaftaran" id="jenis_pendaftaran" class="form-select @error('jenis_pendaftaran') is-invalid @enderror" required>
                                     <option value="" disabled selected>Pilih Jenis Pendaftaran</option>
                                     <option value="Peserta Didik Baru">Peserta Didik Baru</option>
                                     <option value="Pindahan">Pindahan</option>
@@ -44,7 +45,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="jalur_pendaftaran" class="form-label">Jalur Pendaftaran</label>
-                                <select name="jalur_pendaftaran" id="jalur_pendaftaran" class="form-control @error('jalur_pendaftaran') is-invalid @enderror" required>
+                                <select name="jalur_pendaftaran" id="jalur_pendaftaran" class="form-select @error('jalur_pendaftaran') is-invalid @enderror" required>
                                     <option value="" disabled selected>Pilih Jalur Pendaftaran</option>
                                     <option value="Zonasi">Zonasi</option>
                                     <option value="Afirmasi">Afirmasi</option>
@@ -62,7 +63,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="status" class="form-label">Status</label>
-                                <select name="status" id="status" class="form-control @error('status') is-invalid @enderror" required>
+                                <select name="status" id="status" class="form-select @error('status') is-invalid @enderror" required>
                                     <option value="" disabled selected>Pilih Status</option>
                                     <option value="Aktif">Aktif</option>
                                     <option value="Tidak Aktif">Tidak Aktif</option>
@@ -73,7 +74,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="kebutuhan_khusus" class="form-label">Kebutuhan Khusus</label>
-                                <select name="kebutuhan_khusus" id="kebutuhan_khusus" class="form-control @error('kebutuhan_khusus') is-invalid @enderror" required>
+                                <select name="kebutuhan_khusus" id="kebutuhan_khusus" class="form-select @error('kebutuhan_khusus') is-invalid @enderror" required>
                                     <option value="" disabled selected>Pilih Kebutuhan Khusus</option>
                                     <option value="Iya">Iya</option>
                                     <option value="Tidak">Tidak</option>
@@ -103,7 +104,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
-                                <select name="jenis_kelamin" id="jenis_kelamin" class="form-control @error('jenis_kelamin') is-invalid @enderror" required>
+                                <select name="jenis_kelamin" id="jenis_kelamin" class="form-select @error('jenis_kelamin') is-invalid @enderror" required>
                                     <option value="" disabled selected>Pilih Jenis Kelamin</option>
                                     <option value="Laki-laki">Laki-laki</option>
                                     <option value="Perempuan">Perempuan</option>
@@ -114,7 +115,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="agama" class="form-label">Agama</label>
-                                <select name="agama" id="agama" class="form-control @error('agama') is-invalid @enderror" required>
+                                <select name="agama" id="agama" class="form-select @error('agama') is-invalid @enderror" required>
                                     <option value="" disabled selected>Pilih Agama</option>
                                     <option value="Islam">Islam</option>
                                     <option value="Katolik">Katolik</option>
@@ -147,12 +148,12 @@
                         <div class="card-body">
                             <div class="mb-3">
                                 <label for="rt" class="form-label">Nomor RT</label>
-                                <input type="number" name="rt" id="rt" class="form-control"
+                                <input type="text" name="rt" id="rt" class="form-control"
                                     placeholder="Masukkan Nomor RT" required>
                             </div>
                             <div class="mb-3">
                                 <label for="rw" class="form-label">Nomor RW</label>
-                                <input type="number" name="rw" id="rw" class="form-control"
+                                <input type="text" name="rw" id="rw" class="form-control"
                                     placeholder="Masukkan Nomor RW" required>
                             </div>
                             <div class="mb-3">
@@ -182,7 +183,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="telepon" class="form-label">Nomor Telepon</label>
-                                <input type="number" name="telepon" id="telepon" class="form-control"
+                                <input type="text" name="telepon" id="telepon" class="form-control"
                                     placeholder="Masukkan Nomor Telepon" required>
                             </div>
                         </div>
@@ -198,8 +199,8 @@
                         </div>
                         <div class="card-body w-50 ps-2">
                             <div class="mb-3">
-                                <label for="foto_siswa" class="form-label">Foto Siswa</label>
-                                <input type="file" name="foto_siswa" id="foto_siswa" class="form-control" required
+                                <label for="foto" class="form-label">Foto Siswa</label>
+                                <input type="file" name="foto" id="foto" class="form-control" required
                                     onchange="previewImage(event)">
                             </div>
                         </div>
@@ -244,4 +245,3 @@
         }
     </script>
 </x-admin>
-''''''

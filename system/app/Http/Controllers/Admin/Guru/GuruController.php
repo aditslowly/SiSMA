@@ -7,6 +7,7 @@ use App\Models\Guru;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\GuruExport;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -15,12 +16,17 @@ class GuruController extends Controller
     public function index()
     {
         $search = request()->query('search');
-        $gurus = Guru::when($search, function ($query, $search) {
-            return $query
-                ->where('username', 'like', '%' . $search . '%')
-                ->orWhere('nip', 'like', '%' . $search . '%')
-                ->orWhere('email', 'like', '%' . $search . '%');
-        })->paginate(10);
+        $sekolahId = auth('admin')->user()->sekolah_id;
+
+        $gurus = Guru::where('sekolah_id', $sekolahId)
+            ->when($search, function ($query, $search) {
+                return $query
+                    ->where(function ($q) use ($search)  {
+                        $q->where('username', 'like', '%' . $search . '%')
+                          ->orWhere('nip', 'like', '%' . $search . '%')
+                            ->orWhere('email', 'like', '%' . $search . '%');
+                    });
+            })->paginate(10);
 
         return view('admin.data-guru.index', compact('gurus'));
     }
@@ -33,6 +39,7 @@ class GuruController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'sekolah_id'          => 'required|exists:sekolahs,id',
             'username'            => 'required|string|max:255',
             'nip'                 => 'required|numeric|unique:gurus,nip',
             'password'            => 'required|string|min:8',
@@ -44,7 +51,7 @@ class GuruController extends Controller
             'alamat'              => 'required|string',
             'no_telepon'          => 'required|numeric',
             'email'               => 'required|email|unique:gurus,email',
-            'jabatan'             => 'required|in:ASN,Honorer,Magang,Kepala Sekolah,Waka Kesiswaan,Waka Kurikulum,Tata Usaha',
+            'jabatan'             => 'required|in:Kepala Sekolah,Waka Kesiswaan,Waka Kurikulum,Guru,Tata Usaha',
             'pendidikan_terakhir' => 'required|in:Diploma,Sarjana,Megister,Doktor',
             'tahun_masuk'         => 'required|integer',
             'foto_profil'         => 'nullable|image|mimes:jpg,jpeg,png|max:4096',
@@ -56,6 +63,7 @@ class GuruController extends Controller
         $file->move($targetPath, $filename);
 
         $validateData = [
+            'sekolah_id' => $request->input('sekolah_id'),
             'username' => $request->input('username'),
             'nip' => $request->input('nip'),
             'password' => bcrypt($request->input('password')),
@@ -109,6 +117,7 @@ class GuruController extends Controller
             $tanggalLahir = date('Y-m-d', strtotime('1899-12-30 + ' . $serialDate . ' days'));
 
             $guru = Guru::create([
+                'sekolah_id'          => auth('admin')->user()->sekolah_id,
                 'username'            => $row[0],
                 'nip'                 => $row[1],
                 'password'            => bcrypt($row[2]),
@@ -160,7 +169,7 @@ class GuruController extends Controller
             'alamat'              => 'required|string',
             'no_telepon'          => 'required|numeric',
             'email'               => 'required|email|string:gurus,email,' . $guru->id,
-            'jabatan'             => 'nullable|in:ASN,Honorer,Magang,Kepala Sekolah,Waka Kesiswaan,Waka Kurikulum,Tata Usaha',
+            'jabatan'             => 'nullable|in:Kepala Sekolah,Waka Kesiswaan,Waka Kurikulum,Guru,Tata Usaha',
             'pendidikan_terakhir' => 'required|in:Diploma,Sarjana,Megister,Doktor',
             'tahun_masuk'         => 'required|integer',
             'foto_profil'         => 'nullable|image|mimes:jpg,jpeg,png|max:4096',
