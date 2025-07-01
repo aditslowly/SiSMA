@@ -13,6 +13,7 @@ class SiswaImport implements ToModel, WithHeadingRow
         return new Siswa([
             'nisn' => $row['NISN'],
             'nis' => $row['NIS'],
+            'kelas_id' => null,
             'nama_siswa' => $row['Nama Siswa'],
             'jenis_pendaftaran' => $row['Jenis Pendaftaran'],
             'jalur_pendaftaran' => $row['Jalur Pendaftaran'],

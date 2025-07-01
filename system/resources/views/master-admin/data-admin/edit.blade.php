@@ -40,11 +40,11 @@
                                 <input type="password" name="password" id="password" class="form-control" placeholder="Kosongkan jika tidak ingin diubah">
                             </div>
                             <div class="mb-3">
-                                <label for="asal_sekolah" class="form-label">Asal Sekolah</label>
-                                <select name="asal_sekolah_id" id="asal_sekolah_id" class="form-select">
+                                <label for="sekolah_id" class="form-label">Asal Sekolah</label>
+                                <select name="sekolah_id" id="sekolah_id" class="form-select">
                                     <option value=""disabled selected>Pilih sekolah</option>
                                     @foreach ($sekolahs as $sekolah)
-                                        <option value="{{$sekolah->id}}"{{$admin->asal_sekolah_id == $sekolah->id ? 'selected' : ''}}>{{$sekolah->nama_sekolah}}</option>
+                                        <option value="{{$sekolah->id}}"{{$admin->sekolah_id == $sekolah->id ? 'selected' : ''}}>{{$sekolah->nama_sekolah}}</option>
                                     @endforeach
                                 </select>
                             </div>

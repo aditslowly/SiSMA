@@ -47,8 +47,7 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td class="d-flex justify-content-center flex-wrap gap-1">
-                                <a href="{{ url('admin/kelas/edit/' . $item->id) }}"
-                                    class="btn btn-warning btn-sm">
+                                <a href="{{ url('admin/kelas/edit/' . $item->id) }}" class="btn btn-warning btn-sm">
                                     <i class="fs-5 ti ti-edit"></i>
                                 </a>
                                 <form action="{{ url('admin/kelas/destroy/' . $item->id) }}" method="POST"
@@ -77,7 +76,8 @@
         <!-- Pagination -->
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3">
             <div class="mb-2 mb-md-0">
-                <span>Menampilkan {{ $kelas->firstItem() }} sampai {{ $kelas->lastItem() }} dari {{ $kelas->total() }} data</span>
+                <span>Menampilkan {{ $kelas->firstItem() }} sampai {{ $kelas->lastItem() }} dari
+                    {{ $kelas->total() }} data</span>
             </div>
             <div>
                 {{ $kelas->links('pagination::bootstrap-5') }}
@@ -89,7 +89,7 @@
 
         <script>
             // Tombol Export
-            document.getElementById('exportBtn').addEventListener('click', function () {
+            document.getElementById('exportBtn').addEventListener('click', function() {
                 Swal.fire({
                     title: 'Export Data Kelas',
                     text: "Data Kelas akan diekspor!",
@@ -108,11 +108,11 @@
 
             // Konfirmasi Hapus
             document.querySelectorAll('.delete-form').forEach(form => {
-                form.addEventListener('submit', function (e) {
+                form.addEventListener('submit', function(e) {
                     e.preventDefault();
                     Swal.fire({
                         title: 'Apakah anda yakin?',
-                        text: "Data mapel akan dihapus secara permanen!",
+                        text: "Data Kelas akan dihapus secara permanen!",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',

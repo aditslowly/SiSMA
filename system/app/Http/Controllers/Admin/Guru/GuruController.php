@@ -7,6 +7,7 @@ use App\Models\Guru;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\GuruExport;
+use App\Models\TahunAjar;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -33,7 +34,9 @@ class GuruController extends Controller
 
     public function create()
     {
-        return view('admin.data-guru.create');
+        $sekolahId = auth('admin')->user()->sekolah_id;
+        $tahunAjar = TahunAjar::where('sekolah_id', $sekolahId)->get();
+        return view('admin.data-guru.create', compact('tahunAjar'));
     }
 
     public function store(Request $request)
@@ -55,6 +58,8 @@ class GuruController extends Controller
             'pendidikan_terakhir' => 'required|in:Diploma,Sarjana,Megister,Doktor',
             'tahun_masuk'         => 'required|integer',
             'foto_profil'         => 'nullable|image|mimes:jpg,jpeg,png|max:4096',
+            'tahun_ajar_id'       => 'required|array',
+            'tahun_ajar_id'       => 'exists:tahun_ajars,id',
         ]);
 
         $file = $request->file('foto_profil');
@@ -81,7 +86,9 @@ class GuruController extends Controller
             'foto_profil' => $filename
         ];
 
-        Guru::create($validateData);
+        $guru = Guru::create($validateData);
+
+        $guru->tahun_ajar()->sync($request->tahun_ajar_id);
 
 
         return redirect('admin/guru')->with('success', 'Data guru berhasil disimpan.');
@@ -150,7 +157,10 @@ class GuruController extends Controller
 
     public function edit(string $id)
     {
+        $sekolahId = auth('admin')->user()->sekolah_id;
         $guru = Guru::findOrFail($id);
+        $tahunAjar = TahunAjar::where('sekolah_id', $sekolahId)->get();
+        $selectTahunAjar = $guru->tahun_ajar->pluck('id')->array();
         return view('admin.data-guru.edit', compact('guru'));
     }
 
@@ -173,6 +183,8 @@ class GuruController extends Controller
             'pendidikan_terakhir' => 'required|in:Diploma,Sarjana,Megister,Doktor',
             'tahun_masuk'         => 'required|integer',
             'foto_profil'         => 'nullable|image|mimes:jpg,jpeg,png|max:4096',
+            'tahun_ajar_id'       => 'required|array',
+            'tahun_ajar_id.*'     => 'exists:tahun_ajars,id',
         ]);
 
         $validateData = [
@@ -207,6 +219,7 @@ class GuruController extends Controller
 
 
         $guru->update($validateData);
+        $guru->tahun_ajar()->sync($request->tahun_ajar_id);
 
         return redirect('admin/guru')->with('success', 'Data guru berhasil diperbarui.');
     }

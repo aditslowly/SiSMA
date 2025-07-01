@@ -17,7 +17,7 @@
 
                     <!-- Foto Profil -->
                     <a class="nav-link nav-icon-hover" href="#" id="drop2" data-bs-toggle="dropdown">
-                        <img src="{{ url('public/app/foto-guru/' . Auth::user()->foto_profil) }}" width="50" height="50"
+                        <img src="{{ url('public/app/foto-guru/' . Auth::user()->foto_profil) }}" width="40" height="40"
                             class="rounded-circle" alt="Foto Profil">
                     </a>
 

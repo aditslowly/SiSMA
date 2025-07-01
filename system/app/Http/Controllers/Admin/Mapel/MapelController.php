@@ -27,7 +27,8 @@ class MapelController extends Controller
 
     public function create()
     {
-        $gurus = Guru::all();
+        $sekolahId = auth('admin')->user()->sekolah_id;
+        $gurus = Guru::where('sekolah_id', $sekolahId)->get();
         return view('admin.mata-pelajaran.create', compact('gurus'));
     }
 
@@ -57,16 +58,11 @@ class MapelController extends Controller
         return Excel::download(new MapelExport(), 'mapel.xlsx');
     }
 
-    public function show(string $id)
-    {
-        $mapel = Mapel::with('guru')->findOrFail($id);
-        return view('admin.mata-pelajaran.show', compact('mapel'));
-    }
-
     public function edit(string $id)
     {
+        $sekolahId = auth('admin')->user()->sekolah_id;
         $mapel = Mapel::with('gurus')->findOrFail($id);
-        $gurus = Guru::all();
+        $gurus = Guru::where('sekolah_id', $sekolahId)->get();
         return view('admin.mata-pelajaran.edit', compact('mapel', 'gurus'));
     }
 

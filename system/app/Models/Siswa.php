@@ -13,6 +13,7 @@ class Siswa extends Model
         'sekolah_id',
         'nisn',
         'nis',
+        'kelas_id',
         'nama_siswa',
         'jenis_pendaftaran',
         'jalur_pendaftaran',
@@ -38,6 +39,11 @@ class Siswa extends Model
         'password',
         'foto',
     ];
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class);
+    }
 
     protected static function boot()
     {

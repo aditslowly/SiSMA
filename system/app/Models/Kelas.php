@@ -14,10 +14,22 @@ class Kelas extends Model
         'tingkat',
         'jurusan',
         'wali_kelas_id',
+        'siswa_id',
+        'tahun_ajar_id'
     ];
 
     public function wali_kelas()
     {
         return $this->belongsTo(Guru::class, 'wali_kelas_id');
+    }
+
+    public function tahun_ajar()
+    {
+        return $this->belongsTo(TahunAjar::class);
+    }
+
+    public function siswa()
+    {
+        return $this->hasMany(Siswa::class);
     }
 }

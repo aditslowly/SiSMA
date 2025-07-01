@@ -18,6 +18,18 @@ class TahunAjar extends Model
         'status',
     ];
 
+    public function kelas()
+    {
+        return $this->hasMany(Kelas::class);
+    }
+
+    public function guru()
+    {
+        return $this->belongsToMany(Guru::class, 'pivots_guru', 'tahun_ajar_id', 'guru_id')
+            ->withTimestamps()
+            ->using(PivotGuru::class);
+    }
+
     protected static function boot()
     {
         parent::boot();

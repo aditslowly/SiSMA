@@ -60,7 +60,8 @@ class AdminController extends Controller
     public function show(string $id)
     {
         $admin = Admin::findOrFail($id);
-        return view('master-admin.data-admin.detail', compact('admin'));
+        $sekolah = Sekolah::where('id', $admin->sekolah_id)->first();
+        return view('master-admin.data-admin.detail', compact('admin', 'sekolah'));
     }
 
     public function edit(string $id)
@@ -72,6 +73,7 @@ class AdminController extends Controller
 
     public function update(Request $request, string $id)
     {
+
         $admin = Admin::findOrFail($id);
 
         $request->validate([
@@ -79,17 +81,15 @@ class AdminController extends Controller
             'username'      => 'required|string|max:255',
             'email'         => 'required|email|unique:admins,email,' . $admin->id,
             'phone'         => 'required|string|max:20',
-            'asal_sekolah_id'  => 'required|exists:sekolahs,id',
             'password'      => 'nullable|min:8',
             'foto_profil'   => 'nullable|image|mimes:jpg,jpeg,png|max:4096',
         ]);
 
         $validateData = [
-            'sekolah_id' => $request->input('asal_sekolah_id'),
+            'sekolah_id' => $request->input('sekolah_id'),
             'username' => $request->input('username'),
             'email' => $request->input('email'),
             'phone' => $request->input('phone'),
-            'asal_sekolah_id' => $request->input('asal_sekolah_id'),
         ];
 
         if ($request->filled('password')) {

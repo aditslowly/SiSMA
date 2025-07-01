@@ -44,6 +44,7 @@ class SiswaController extends Controller
             'sekolah_id' => 'required|exists:sekolahs,id',
             'nisn' => 'required|string',
             'nis' => 'required|string',
+            'kelas_id' => 'nullable',
             'nama_siswa' => 'required|string|max:225',
             'jenis_pendaftaran' => 'required|string|in:Peserta Didik Baru,Pindahan',
             'jalur_pendaftaran' => 'required|string|in:Zonasi,Afirmasi,Perpindahan Orang Tua,Prestasi,Mandiri',
@@ -75,6 +76,7 @@ class SiswaController extends Controller
             'sekolah_id',
             'nisn',
             'nis',
+            'kelas_id',
             'nama_siswa',
             'jenis_pendaftaran',
             'jalur_pendaftaran',
@@ -129,6 +131,7 @@ class SiswaController extends Controller
     public function import(Request $request)
     {
 
+
         $request->validate([
             'file' => 'required|mimes:xlsx,xls,csv'
         ]);
@@ -142,10 +145,11 @@ class SiswaController extends Controller
             if ($index == 0) continue;
             $data = array_slice($row, 1);
 
+            /* dd($row); */
             $jenis_kelamin = null;
             // Validasi jenis kelamin
-            if (isset($row[11])) {
-                $value = strtolower(trim($row[11]));
+            if (isset($row[12])) {
+                $value = strtolower(trim($row[12]));
                 if ($value === 'laki-laki' || $value === 'l') {
                     $jenis_kelamin = 'Laki-Laki';
                 } elseif ($value === 'perempuan' || $value === 'p') {
@@ -166,30 +170,31 @@ class SiswaController extends Controller
                 'sekolah_id' => auth('admin')->user()->sekolah_id,
                 'nisn' => $row[0],
                 'nis' => $row[1],
-                'nama_siswa' => $row[2],
-                'jalur_pendaftaran' => in_array($row[3], ['Zonasi', 'Afirmasi', 'Perpindahan Orang Tua', 'Prestasi', 'Mandiri']) ? $row[4] : 'Zonasi',
-                'jenis_pendaftaran' => $row[4] == 'Peserta Didik Baru' ? 'Peserta Didik Baru' : 'Pindahan',
-                'tanggal_masuk' => $this->formatTanggal($row[5]),
-                'status' => $row[6] == 'Aktif' ? 'Aktif' : 'Tidak Aktif',
-                'kebutuhan_khusus' => $row[7] == 'Iya' ? 'Iya' : 'Tidak',
-                'email' => $row[8],
-                'no_kk' => $row[9],
-                'nik' => $row[10],
+                'kelas_id' => !empty($row[2]) ? $row[2] : null,
+                'nama_siswa' => $row[3],
+                'jalur_pendaftaran' => in_array($row[4], ['Zonasi', 'Afirmasi', 'Perpindahan Orang Tua', 'Prestasi', 'Mandiri']) ? $row[4] : 'Zonasi',
+                'jenis_pendaftaran' => $row[5] == 'Peserta Didik Baru' ? 'Peserta Didik Baru' : 'Pindahan',
+                'tanggal_masuk' => $this->formatTanggal($row[6]),
+                'status' => $row[7] == 'Aktif' ? 'Aktif' : 'Tidak Aktif',
+                'kebutuhan_khusus' => $row[8] == 'Iya' ? 'Iya' : 'Tidak',
+                'email' => $row[9],
+                'no_kk' => $row[10],
+                'nik' => $row[11],
                 'jenis_kelamin' => $jenis_kelamin,
-                'agama' => in_array($row[12], ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu']) ? $row[12] : 'Islam',
-                'tanggal_lahir' => $this->formatTanggal($row[13]),
-                'tempat_lahir' => $row[14],
-                'alamat' => $row[15],
-                'rt' => $row[16],
-                'rw' => $row[17],
-                'dusun' => $row[18],
-                'desa_kelurahan' => $row[19],
-                'provinsi' => $row[20],
-                'kabupaten' => $row[21],
-                'kecamatan' => $row[22],
-                'telepon' => $row[23],
-                'password' => isset($row[24]) ? bcrypt($row[24]) : null,
-                'foto' => isset($row[25]) && !empty($row[25]) ? $row[25] : 'belum ada foto',
+                'agama' => in_array($row[13], ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu']) ? $row[13] : 'Islam',
+                'tanggal_lahir' => $this->formatTanggal($row[14]),
+                'tempat_lahir' => $row[15],
+                'alamat' => $row[16],
+                'rt' => $row[17],
+                'rw' => $row[18],
+                'dusun' => $row[19],
+                'desa_kelurahan' => $row[20],
+                'provinsi' => $row[21],
+                'kabupaten' => $row[22],
+                'kecamatan' => $row[23],
+                'telepon' => $row[24],
+                'password' => isset($row[25]) && !empty($row[25]) ? bcrypt($row[25]) : bcrypt("12345678"),
+                'foto' => isset($row[26]) && !empty($row[26]) ? $row[26] : 'belum ada foto',
             ]);
         }
 

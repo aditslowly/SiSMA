@@ -52,9 +52,10 @@ class TahunAjarController extends Controller
         return redirect('admin/tahun-ajar')->with('success', 'Tahun ajar berhasil ditambahkan.');
     }
 
-    public function show()
+    public function show($id)
     {
-        return view('admin.tahun-ajar.detail');
+        $tahunAjar = TahunAjar::findOrFail($id);
+        return view('admin.tahun-ajar.detail', compact('tahunAjar'));
     }
 
     public function edit($id)

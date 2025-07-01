@@ -24,7 +24,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Asal Sekolah</label>
-                            <input type="text" class="form-control" value="{{ $admin->asal_sekolah }}" readonly>
+                            <input type="text" class="form-control" value="{{ $sekolah->nama_sekolah  }}" readonly>
                         </div>
                     </div>
                 </div>

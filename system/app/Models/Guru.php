@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -37,6 +38,13 @@ class Guru extends Authenticatable
         static::creating(function($model) {
             $model->id = (string) Str::uuid();
         });
+    }
+
+    public function tahun_ajar()
+    {
+        return $this->belongsToMany(TahunAjar::class, 'pivots_guru', 'guru_id', 'tahun_ajar_id')
+            ->withTimestamps()
+            ->using(PivotGuru::class);
     }
 
 

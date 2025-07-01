@@ -29,19 +29,19 @@
                     <span class="hide-menu">MENU</span>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link @if (request()->is('guru/*')) active @endif" href="{{ url('master-admin/data-admin') }}" aria-expanded="false">
+                    <a class="sidebar-link @if (request()->is('guru/kelas*')) active @endif" href="{{ url('guru/kelas') }}" aria-expanded="false">
                         <span>
-                            <i class="ti ti-users"></i>
+                            <i class="ti ti-door"></i>
                         </span>
-                        <span class="hide-menu">Data Admin</span>
+                        <span class="hide-menu">Kelas</span>
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link @if (request()->is('master-admin/data-sekolah*')) active @endif" href="{{ url('master-admin/data-sekolah') }}" aria-expanded="false">
+                    <a class="sidebar-link @if (request()->is('guru/mapel*')) active @endif" href="{{ url('guru/mapel') }}" aria-expanded="false">
                         <span>
-                            <i class="ti ti-home"></i>
+                            <i class="ti ti-books"></i>
                         </span>
-                        <span class="hide-menu">Data Sekolah</span>
+                        <span class="hide-menu">Mata Pelajaran</span>
                     </a>
                 </li>
                 <li class="nav-small-cap">
