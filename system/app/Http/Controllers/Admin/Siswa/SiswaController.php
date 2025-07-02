@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Siswa;
 
 use App\Exports\SiswaExport;
 use App\Http\Controllers\Controller;
+use App\Models\PivotGuru;
 use App\Models\Siswa;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
@@ -25,7 +26,7 @@ class SiswaController extends Controller
                     ->where(function ($q) use ($search) {
                         $q->where('nisn', 'like', '%' . $search . '%')
                             ->orWhere('nis', 'like', '%' . $search . '%')
-                            ->orWhere('nama_siswa', 'like', '%'. $search . '%');
+                            ->orWhere('nama_siswa', 'like', '%' . $search . '%');
                     });
             })->paginate(10);
 
@@ -35,7 +36,11 @@ class SiswaController extends Controller
 
     public function create()
     {
-        return view('admin.data-siswa.create');
+        $sekolahId = auth('admin')->user()->sekolah_id;
+        $pivotGuru = PivotGuru::whereHas('guru', function ($query) use ($sekolahId) {
+            $query->where('sekolah_id', $sekolahId);
+        })->with(['guru', 'tahun_ajar'])->get();
+        return view('admin.data-siswa.create', compact('pivotGuru'));
     }
 
     public function store(Request $request)
@@ -116,7 +121,8 @@ class SiswaController extends Controller
         return redirect('admin/siswa')->with('success', 'Data Siswa berhasil ditambahkan.');
     }
 
-    private function formatTanggal($value) {
+    private function formatTanggal($value)
+    {
         if (is_numeric($value)) {
             return Date::excelToDateTimeObject($value)->format('Y-m-d');
         }

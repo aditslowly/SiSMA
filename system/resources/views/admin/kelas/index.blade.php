@@ -47,6 +47,9 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td class="d-flex justify-content-center flex-wrap gap-1">
+                                <a href="{{ url('admin/kelas/detail/' . $item->id) }}" class="btn btn-info btn-sm">
+                                    <i class="fs-5 ti ti-file-description"></i>
+                                </a>
                                 <a href="{{ url('admin/kelas/edit/' . $item->id) }}" class="btn btn-warning btn-sm">
                                     <i class="fs-5 ti ti-edit"></i>
                                 </a>
@@ -62,7 +65,9 @@
                             <td>{{ $item->nama_kelas }}</td>
                             <td>{{ $item->tingkat }}</td>
                             <td>{{ $item->jurusan }}</td>
-                            <td>{{ $item->wali_kelas ? $item->wali_kelas->username : 'Belum ada guru' }}</td>
+                            <td>
+                                {{ $item->pivot_guru->first()->guru->username ?? 'Tidak ada wali kelas' }}
+                            </td>
                         </tr>
                     @empty
                         <tr>

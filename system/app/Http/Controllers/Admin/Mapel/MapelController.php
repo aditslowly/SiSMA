@@ -7,6 +7,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
 use App\Models\Guru;
 use App\Models\Mapel;
+use App\Models\PivotGuru;
 use Illuminate\Http\Request;
 
 class MapelController extends Controller
@@ -16,8 +17,8 @@ class MapelController extends Controller
         $search = $request->input('search');
         $sekolahId = auth('admin')->user()->sekolah_id;
 
-        $mapels = Mapel::where('sekolah_id', $sekolahId) -> when($search, function ($query, $search){
-            return $query -> where(function ($q) use ($search) {
+        $mapels = Mapel::where('sekolah_id', $sekolahId)->when($search, function ($query, $search) {
+            return $query->where(function ($q) use ($search) {
                 $q->where('kode_mapel', 'like', '%' . $search . '%')
                     ->orWhere('nama_mapel', 'like', '%' . $search . '%');
             });
@@ -28,8 +29,10 @@ class MapelController extends Controller
     public function create()
     {
         $sekolahId = auth('admin')->user()->sekolah_id;
-        $gurus = Guru::where('sekolah_id', $sekolahId)->get();
-        return view('admin.mata-pelajaran.create', compact('gurus'));
+        $pivotGuru = PivotGuru::whereHas('guru', function ($query) use ($sekolahId) {
+            $query->where('sekolah_id', $sekolahId);
+        })->get();
+        return view('admin.mata-pelajaran.create', compact('pivotGuru'));
     }
 
     public function store(Request $request)
@@ -39,7 +42,6 @@ class MapelController extends Controller
             'kode_mapel' => 'required|string|max:255|unique:mapels,kode_mapel',
             'nama_mapel' => 'required|string|max:255',
             'deskripsi' => 'nullable|string|max:1000',
-            'guru_id' => 'required|exists:gurus,id',
         ]);
 
         Mapel::create([
@@ -47,7 +49,6 @@ class MapelController extends Controller
             'kode_mapel' => $request->kode_mapel,
             'nama_mapel' => $request->nama_mapel,
             'deskripsi' => $request->deskripsi,
-            'guru_id' => $request->guru_id,
         ]);
 
         return redirect('admin/mata-pelajaran')->with('success', 'Mata Pelajaran berhasil ditambahkan.');
@@ -61,9 +62,7 @@ class MapelController extends Controller
     public function edit(string $id)
     {
         $sekolahId = auth('admin')->user()->sekolah_id;
-        $mapel = Mapel::with('gurus')->findOrFail($id);
-        $gurus = Guru::where('sekolah_id', $sekolahId)->get();
-        return view('admin.mata-pelajaran.edit', compact('mapel', 'gurus'));
+        return view('admin.mata-pelajaran.edit');
     }
 
     public function update(Request $request, $id)
@@ -72,7 +71,6 @@ class MapelController extends Controller
             'kode_mapel' => 'required|string|max:255|unique:mapels,kode_mapel,' . $id,
             'nama_mapel' => 'required|string|max:255',
             'deskripsi' => 'nullable|string|max:1000',
-            'guru_id' => 'required|exists:gurus,id',
         ]);
 
         $mapel = Mapel::findOrFail($id);
@@ -81,7 +79,6 @@ class MapelController extends Controller
             'kode_mapel' => $request->kode_mapel,
             'nama_mapel' => $request->nama_mapel,
             'deskripsi' => $request->deskripsi,
-            'guru_id' => $request->guru_id,
         ]);
 
         return redirect('admin/mata-pelajaran')->with('success', 'Data mata pelajaran berhasil diperbarui!');

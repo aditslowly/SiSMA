@@ -23,11 +23,11 @@
                         </div>
                     @endif
 
-                    <input type="text" name="sekolah_id" value="{{auth('admin')->user()->sekolah_id}}" hidden/>
+                    <input type="text" name="sekolah_id" value="{{ auth('admin')->user()->sekolah_id }}" hidden />
                     <div class="mb-3">
                         <label for="nama_kelas" class="form-label">Nama Kelas</label>
                         <input type="text" name="nama_kelas" class="form-control"
-                                value="{{ old('nama_kelas', $kelas->nama_kelas) }}" required>
+                            value="{{ old('nama_kelas', $kelas->nama_kelas) }}" required>
                     </div>
 
                     <div class="mb-3">
@@ -35,7 +35,8 @@
                         <select name="tingkat" class="form-select" required>
                             <option value="" disabled>-- Pilih Tingkat --</option>
                             @foreach (['X', 'XI', 'XII'] as $tingkat)
-                                <option value="{{ $tingkat }}" {{ old('tingkat', $kelas->tingkat) == $tingkat ? 'selected' : '' }}>
+                                <option value="{{ $tingkat }}"
+                                    {{ old('tingkat', $kelas->tingkat) == $tingkat ? 'selected' : '' }}>
                                     {{ $tingkat }}
                                 </option>
                             @endforeach
@@ -47,7 +48,8 @@
                         <select name="jurusan" class="form-select" required>
                             <option value="" disabled>-- Pilih Jurusan --</option>
                             @foreach (['IPA', 'IPS'] as $jurusan)
-                                <option value="{{ $jurusan }}" {{ old('jurusan', $kelas->jurusan) == $jurusan ? 'selected' : '' }}>
+                                <option value="{{ $jurusan }}"
+                                    {{ old('jurusan', $kelas->jurusan) == $jurusan ? 'selected' : '' }}>
                                     {{ $jurusan }}
                                 </option>
                             @endforeach
@@ -55,13 +57,37 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="wali_kelas_id" class="form-label">Wali Kelas</label>
-                        <select name="wali_kelas_id" class="form-select" required>
-                            <option value="">-- Pilih Wali Kelas --</option>
-                            @foreach ($gurus as $guru)
-                                <option value="{{ $guru->id }}"
-                                    {{ old('wali_kelas_id', $kelas->wali_kelas_id) == $guru->id ? 'selected' : '' }}>
-                                    {{ $guru->username }}
+                        <label for="pivot_guru_id" class="form-label">Pilih Guru & Tahun Ajar</label>
+                        <select name="pivot_guru_id[]" id="pivot_guru_id" class="form-select select2-guru" multiple
+                            required>
+                            @foreach ($pivotGuru as $pivot)
+                                <option value="{{ $pivot->id }}"
+                                    {{ collect(old('pivot_guru_id'))->contains($pivot->id) ? 'selected' : '' }}>
+                                    {{ $pivot->guru->username }} - {{ $pivot->tahun_ajar->tahun_ajar }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="mapel_id" class="form-label">Pilih Mata Pelajaran</label>
+                        <select name="mapel_id[]" id="mapel_id" class="form-select select2-mapel" multiple required>
+                            @foreach ($mapels as $mapel)
+                                <option value="{{ $mapel->id }}"
+                                    {{ collect(old('mapel_id'))->contains($mapel->id) ? 'selected' : '' }}>
+                                    {{ $mapel->nama_mapel }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="siswa_id" class="form-label">Masukkan Siswa</label>
+                        <select name="siswa_id[]" id="siswa_id" class="form-select select2-siswa" required multiple>
+                            @foreach ($siswas as $siswa)
+                                <option value="{{ $siswa->id }}"
+                                    {{ collect(old('siswa_id'))->contains($siswa->id) ? 'selected' : '' }}>
+                                    {{ $siswa->nama_siswa }} - {{ $siswa->nisn }}
                                 </option>
                             @endforeach
                         </select>
@@ -100,3 +126,30 @@
         }
     </script>
 </x-admin>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<!-- Aktifkan Select2 -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        $('.select2-siswa').select2({
+            placeholder: 'Pilih Siswa',
+            allowClear: true,
+        })
+    })
+
+    document.addEventListener('DOMContentLoaded', function() {
+        $('.select2-guru').select2({
+            placeholder: 'Pilih Kombinasi Guru & Tahun Ajar',
+            allowClear: true,
+        })
+    })
+
+    document.addEventListener('DOMContentLoaded', function() {
+        $('.select2-mapel').select2({
+            placeholder: 'Pilih Mata Pelajaran',
+            allowClear: true,
+        })
+    })
+</script>

@@ -50,6 +50,7 @@ Route::delete('mata-pelajaran/destroy/{id}', [MapelController::class, 'destroy']
 Route::get('kelas', [KelasController::class, 'index'])->name('kelas');
 Route::get('kelas/create', [KelasController::class, 'create'])->name('kelas.create');
 Route::post('kelas', [KelasController::class, 'store'])->name('kelas.store');
+Route::get('kelas/detail/{id}', [KelasController::class, 'show'])->name('kelas.show');
 Route::get('kelas/edit/{id}', [KelasController::class, 'edit'])->name('kelas.edit');
 Route::put('kelas/{id}', [KelasController::class, 'update']);
 Route::delete('kelas/destroy/{id}', [KelasController::class, 'destroy'])->name('kelas.destroy');

@@ -22,9 +22,9 @@ class GuruController extends Controller
         $gurus = Guru::where('sekolah_id', $sekolahId)
             ->when($search, function ($query, $search) {
                 return $query
-                    ->where(function ($q) use ($search)  {
+                    ->where(function ($q) use ($search) {
                         $q->where('username', 'like', '%' . $search . '%')
-                          ->orWhere('nip', 'like', '%' . $search . '%')
+                            ->orWhere('nip', 'like', '%' . $search . '%')
                             ->orWhere('email', 'like', '%' . $search . '%');
                     });
             })->paginate(10);
@@ -158,10 +158,10 @@ class GuruController extends Controller
     public function edit(string $id)
     {
         $sekolahId = auth('admin')->user()->sekolah_id;
-        $guru = Guru::findOrFail($id);
+        $guru = Guru::with('tahun_ajar')->findOrFail($id);
         $tahunAjar = TahunAjar::where('sekolah_id', $sekolahId)->get();
-        $selectTahunAjar = $guru->tahun_ajar->pluck('id')->array();
-        return view('admin.data-guru.edit', compact('guru'));
+        $selectTahunAjar = $guru->tahun_ajar->pluck('id')->toArray();
+        return view('admin.data-guru.edit', compact('guru', 'tahunAjar', 'selectTahunAjar'));
     }
 
     public function update(Request $request, string $id)

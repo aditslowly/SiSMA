@@ -35,26 +35,15 @@ class Guru extends Authenticatable
     {
         parent::boot();
 
-        static::creating(function($model) {
+        static::creating(function ($model) {
             $model->id = (string) Str::uuid();
         });
     }
 
     public function tahun_ajar()
     {
-        return $this->belongsToMany(TahunAjar::class, 'pivots_guru', 'guru_id', 'tahun_ajar_id')
+        return $this->belongsToMany(TahunAjar::class, 'pivots_gurus', 'guru_id', 'tahun_ajar_id')
             ->withTimestamps()
             ->using(PivotGuru::class);
-    }
-
-
-    public function mapels()
-    {
-        return $this->hasMany(Mapel::class, 'mapel_id');
-    }
-
-    public function kelas_diwalikan()
-    {
-        return $this->hasMany(Kelas::class, 'wali_kelas_id');
     }
 }

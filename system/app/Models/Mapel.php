@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Mapel extends Model
 {
@@ -12,14 +11,15 @@ class Mapel extends Model
     public $incrementing = false;
     protected $fillable = [
         'sekolah_id',
-        'guru_id',
         'kode_mapel',
         'nama_mapel',
         'deskripsi',
     ];
 
-    public function gurus()
+    public function pivot_kelas()
     {
-        return $this->belongsTo(Guru::class, 'guru_id');
+        return $this->belongsToMany(PivotKelas::class, 'pivots_mapel', 'mapel_id', 'pivot_kelas_id')
+            ->withTimestamps()
+            ->using(PivotMapel::class);
     }
 }

@@ -5,7 +5,8 @@
         <form action="{{ url('admin/guru') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
-            <input type="text" name="sekolah_id" id="sekolah_id" value="{{auth('admin')->user()->sekolah_id}}" hidden/>
+            <input type="text" name="sekolah_id" id="sekolah_id" value="{{ auth('admin')->user()->sekolah_id }}"
+                hidden />
 
             @if ($errors)
                 @foreach ($errors->all() as $key => $message)
@@ -13,124 +14,158 @@
                 @endforeach
             @endif
 
-            <div class="card p-4">
-                <!-- Foto Profil di bagian atas card dengan preview -->
-                <div class="mb-4 text-center">
-                    <label for="foto_profil" class="form-label fw-bold">Foto Profil</label>
-                    <div>
-                        <img id="previewFoto" src="{{ old('foto_profil_url', asset('images/default-profile.png')) }}"
-                            alt="Preview Foto"
-                            style="max-width: 150px; max-height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 10px;" />
+            {{-- Preview Gambar di Atas --}}
+            <div class="text-center mb-4">
+                <img id="previewFoto" src="{{ old('foto_profil_url', asset('images/default-profile.png')) }}"
+                    alt="Preview Foto" class="img-thumbnail rounded" width="250px" height="250px" />
+            </div>
+
+            <div class="row">
+                <!-- Kolom kiri -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="tahun_ajar_id" class="form-label">Tahun Ajar</label>
+                        <select name="tahun_ajar_id[]" class="form-control">
+                            @foreach ($tahunAjar as $tahun)
+                                <option value="{{ $tahun->id }}"
+                                    {{ in_array($tahun->id, $selectedTahunAjar ?? []) ? 'selected' : '' }}>
+                                    {{ $tahun->tahun_ajar }}</option>
+                            @endforeach
+                        </select>
                     </div>
-                    <input type="file" name="foto_profil" id="foto_profil" class="form-control mx-auto"
-                        style="max-width: 300px;" accept="image/*" onchange="previewImage(event)">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Nama Guru</label>
+                        <input type="text" name="username" id="username" class="form-control"
+                            value="{{ old('username') }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nip" class="form-label">NIP</label>
+                        <input type="number" name="nip" id="nip" class="form-control"
+                            value="{{ old('nip') }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" name="password" id="password" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
+                        <select name="jenis_kelamin" id="jenis_kelamin" class="form-select" required>
+                            <option value="" disabled {{ old('jenis_kelamin') ? '' : 'selected' }}>Pilih Jenis
+                                Kelamin</option>
+                            <option value="Laki-Laki" {{ old('jenis_kelamin') == 'Laki-Laki' ? 'selected' : '' }}>
+                                Laki-Laki</option>
+                            <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>
+                                Perempuan</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="agama" class="form-label">Agama</label>
+                        <select name="agama" id="agama" class="form-select" required>
+                            <option value="" disabled {{ old('agama') ? '' : 'selected' }}>Pilih Agama
+                            </option>
+                            <option value="Islam" {{ old('agama') == 'Islam' ? 'selected' : '' }}>Islam</option>
+                            <option value="Kristen" {{ old('agama') == 'Kristen' ? 'selected' : '' }}>Kristen
+                            </option>
+                            <option value="Katolik" {{ old('agama') == 'Katolik' ? 'selected' : '' }}>Katolik
+                            </option>
+                            <option value="Buddha" {{ old('agama') == 'Buddha' ? 'selected' : '' }}>Buddha</option>
+                            <option value="Hindu" {{ old('agama') == 'Hindu' ? 'selected' : '' }}>Hindu</option>
+                            <option value="Konghuchu" {{ old('agama') == 'Konghuchu' ? 'selected' : '' }}>Konghuchu
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tempat_lahir" class="form-label">Tempat Lahir</label>
+                        <input type="text" name="tempat_lahir" id="tempat_lahir" class="form-control"
+                            value="{{ old('tempat_lahir') }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
+                        <input type="date" name="tanggal_lahir" id="tanggal_lahir" class="form-control"
+                            value="{{ old('tanggal_lahir') }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status Aktif</label>
+                        <select name="status" id="status" class="form-select" required>
+                            <option value="" disabled {{ old('status') ? '' : 'selected' }}>Pilih Status Guru
+                            </option>
+                            <option value="Aktif" {{ old('status') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+                            <option value="Tidak Aktif" {{ old('status') == 'Tidak Aktif' ? 'selected' : '' }}>
+                                Tidak Aktif</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="row">
-                    <!-- Kolom kiri -->
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Nama Guru</label>
-                            <input type="text" name="username" id="username" class="form-control" value="{{ old('username') }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="nip" class="form-label">NIP</label>
-                            <input type="number" name="nip" id="nip" class="form-control" value="{{ old('nip') }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" name="password" id="password" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
-                            <select name="jenis_kelamin" id="jenis_kelamin" class="form-select" required>
-                                <option value="" disabled {{ old('jenis_kelamin') ? '' : 'selected' }}>Pilih Jenis Kelamin</option>
-                                <option value="Laki-Laki" {{ old('jenis_kelamin') == 'Laki-Laki' ? 'selected' : '' }}>Laki-Laki</option>
-                                <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="agama" class="form-label">Agama</label>
-                            <select name="agama" id="agama" class="form-select" required>
-                                <option value="" disabled {{ old('agama') ? '' : 'selected' }}>Pilih Agama</option>
-                                <option value="Islam" {{ old('agama') == 'Islam' ? 'selected' : '' }}>Islam</option>
-                                <option value="Kristen" {{ old('agama') == 'Kristen' ? 'selected' : '' }}>Kristen</option>
-                                <option value="Katolik" {{ old('agama') == 'Katolik' ? 'selected' : '' }}>Katolik</option>
-                                <option value="Buddha" {{ old('agama') == 'Buddha' ? 'selected' : '' }}>Buddha</option>
-                                <option value="Hindu" {{ old('agama') == 'Hindu' ? 'selected' : '' }}>Hindu</option>
-                                <option value="Konghuchu" {{ old('agama') == 'Konghuchu' ? 'selected' : '' }}>Konghuchu</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="tempat_lahir" class="form-label">Tempat Lahir</label>
-                            <input type="text" name="tempat_lahir" id="tempat_lahir" class="form-control" value="{{ old('tempat_lahir') }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
-                            <input type="date" name="tanggal_lahir" id="tanggal_lahir" class="form-control" value="{{ old('tanggal_lahir') }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="status" class="form-label">Status Aktif</label>
-                            <select name="status" id="status" class="form-select" required>
-                                <option value="" disabled {{ old('status') ? '' : 'selected' }}>Pilih Status Guru</option>
-                                <option value="Aktif" {{ old('status') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
-                                <option value="Tidak Aktif" {{ old('status') == 'Tidak Aktif' ? 'selected' : '' }}>Tidak Aktif</option>
-                            </select>
-                        </div>
+                <!-- Kolom kanan -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="alamat" class="form-label">Alamat</label>
+                        <textarea name="alamat" id="alamat" class="form-control" rows="3" required>{{ old('alamat') }}</textarea>
                     </div>
-
-                    <!-- Kolom kanan -->
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="alamat" class="form-label">Alamat</label>
-                            <textarea name="alamat" id="alamat" class="form-control" rows="3" required>{{ old('alamat') }}</textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="no_telepon" class="form-label">Nomor Telepon</label>
-                            <input type="text" name="no_telepon" id="no_telepon" class="form-control" value="{{ old('no_telepon') }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="jabatan" class="form-label">Jabatan</label>
-                            <select name="jabatan" id="jabatan" class="form-select" required>
-                                <option value="" disabled {{ old('jabatan') ? '' : 'selected' }}>Pilih Jabatan</option>
-                                <option value="Kepala Sekolah" {{old('jabatan') == 'Kepala Sekolah' ? 'selected' : ''}}>Kepala Sekolah</option>
-                                <option value="Waka Kesiswaan" {{ old('jabatan') == 'Waka Kesiswaan' ? 'selected' : '' }}>Waka Kesiswaan</option>
-                                <option value="Waka Kurikulum" {{ old('jabatan') == 'Waka Kurikulum' ? 'selected' : '' }}>Waka Kurikulum</option>
-                                <option value="Guru" {{ old('jabatan') == 'Guru' ? 'selected' : '' }}>Guru</option>
-                                <option value="Tata Usaha" {{ old('jabatan') == 'Tata Usaha' ? 'selected' : '' }}>Tata Usaha</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="pendidikan_terakhir" class="form-label">Pendidikan Terakhir</label>
-                            <select name="pendidikan_terakhir" id="pendidikan_terakhir" class="form-select" required>
-                                <option value="" disabled {{ old('pendidikan_terakhir') ? '' : 'selected' }}>Pilih Pendidikan Terakhir</option>
-                                <option value="Diploma" {{ old('pendidikan_terakhir') == 'Diploma' ? 'selected' : '' }}>Diploma</option>
-                                <option value="Sarjana" {{ old('pendidikan_terakhir') == 'Sarjana' ? 'selected' : '' }}>Sarjana</option>
-                                <option value="Megister" {{ old('pendidikan_terakhir') == 'Megister' ? 'selected' : '' }}>Megister</option>
-                                <option value="Doktor" {{ old('pendidikan_terakhir') == 'Doktor' ? 'selected' : '' }}>Doktor</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="tahun_masuk" class="form-label">Tahun Masuk</label>
-                            <input type="number" name="tahun_masuk" id="tahun_masuk" class="form-control" value="{{ old('tahun_masuk') }}" required>
-                        </div>
+                    <div class="mb-3">
+                        <label for="no_telepon" class="form-label">Nomor Telepon</label>
+                        <input type="text" name="no_telepon" id="no_telepon" class="form-control"
+                            value="{{ old('no_telepon') }}" required>
                     </div>
-                </div> <!-- end row -->
-
-                <div class="d-flex gap-2 mt-3 justify-content-end">
-                    <button type="submit" class="btn btn-success">
-                        <i class="ti ti-check"></i> Simpan
-                    </button>
-                    <a href="{{ url('admin/guru') }}" class="btn btn-secondary">
-                        <i class="ti ti-arrow-left"></i> Kembali
-                    </a>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" name="email" id="email" class="form-control"
+                            value="{{ old('email') }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="jabatan" class="form-label">Jabatan</label>
+                        <select name="jabatan" id="jabatan" class="form-select" required>
+                            <option value="" disabled {{ old('jabatan') ? '' : 'selected' }}>Pilih Jabatan
+                            </option>
+                            <option value="Kepala Sekolah" {{ old('jabatan') == 'Kepala Sekolah' ? 'selected' : '' }}>
+                                Kepala Sekolah</option>
+                            <option value="Waka Kesiswaan" {{ old('jabatan') == 'Waka Kesiswaan' ? 'selected' : '' }}>
+                                Waka Kesiswaan</option>
+                            <option value="Waka Kurikulum" {{ old('jabatan') == 'Waka Kurikulum' ? 'selected' : '' }}>
+                                Waka Kurikulum</option>
+                            <option value="Guru" {{ old('jabatan') == 'Guru' ? 'selected' : '' }}>Guru</option>
+                            <option value="Tata Usaha" {{ old('jabatan') == 'Tata Usaha' ? 'selected' : '' }}>Tata
+                                Usaha</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="pendidikan_terakhir" class="form-label">Pendidikan Terakhir</label>
+                        <select name="pendidikan_terakhir" id="pendidikan_terakhir" class="form-select" required>
+                            <option value="" disabled {{ old('pendidikan_terakhir') ? '' : 'selected' }}>
+                                Pilih Pendidikan Terakhir</option>
+                            <option value="Diploma" {{ old('pendidikan_terakhir') == 'Diploma' ? 'selected' : '' }}>
+                                Diploma</option>
+                            <option value="Sarjana" {{ old('pendidikan_terakhir') == 'Sarjana' ? 'selected' : '' }}>
+                                Sarjana</option>
+                            <option value="Megister" {{ old('pendidikan_terakhir') == 'Megister' ? 'selected' : '' }}>
+                                Megister</option>
+                            <option value="Doktor" {{ old('pendidikan_terakhir') == 'Doktor' ? 'selected' : '' }}>
+                                Doktor</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tahun_masuk" class="form-label">Tahun Masuk</label>
+                        <input type="number" name="tahun_masuk" id="tahun_masuk" class="form-control"
+                            value="{{ old('tahun_masuk') }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="file" name="foto_profil" id="foto_profil" class="form-control"
+                            accept="image/*" onchange="previewImage(event)">
+                        <small class="text-muted">Format: JPG, PNG. Maksimal 4MB.</small>
+                    </div>
                 </div>
-            </div> <!-- end card -->
-        </form>
+            </div> <!-- end row -->
+
+            <div class="d-flex gap-2 mt-3 justify-content-end">
+                <button type="submit" class="btn btn-success">
+                    <i class="ti ti-check"></i> Simpan
+                </button>
+                <a href="{{ url('admin/guru') }}" class="btn btn-secondary">
+                    <i class="ti ti-arrow-left"></i> Kembali
+                </a>
+            </div>
+    </div> <!-- end card -->
+    </form>
     </div>
 
     <script>

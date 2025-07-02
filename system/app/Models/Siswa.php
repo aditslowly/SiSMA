@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+
 class Siswa extends Model
 {
     public $incrementing = false;
@@ -40,9 +41,11 @@ class Siswa extends Model
         'foto',
     ];
 
-    public function kelas()
+    public function pivot_kelas()
     {
-        return $this->belongsTo(Kelas::class);
+        return $this->belongsToMany(PivotKelas::class, 'anggota_kelas', 'siswa_id', 'pivot_kelas_id')
+            ->withTimestamps()
+            ->using(PivotSiswa::class);
     }
 
     protected static function boot()

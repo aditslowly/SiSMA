@@ -36,34 +36,6 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-
-                    <div class="mb-3">
-                        <label for="tahun_ajar_id" class="form-label">Tahun Ajar</label>
-                        <select name="tahun_ajar_id" class="form-select">
-                            <option value="" disabled>-- Pilih Tahun Ajar --</option>
-                            @foreach ($tahun_ajar as $tahun)
-                                <option value="{{ $tahun->id }}">{{ $tahun->tahun_ajar }}</option>
-                            @endforeach
-                        </select>
-                        @error('tahun_ajar_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-
-                    <div class="mb-3">
-                        <label for="siswa_id" class="form-label">Nama Siswa</label>
-                        <select name="siswa_id" class="form-select" required>
-                            <option value="">-- Tambahkan Siswa --</option>
-                            @foreach ($siswas as $siswa)
-                                <option value="{{ $siswa->id }}">{{ $siswa->nama_siswa }}</option>
-                            @endforeach
-                        </select>
-                        @error('siswa_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
                     {{-- Tingkat --}}
                     <div class="mb-3">
                         <label for="tingkat" class="form-label">Tingkat</label>
@@ -93,19 +65,41 @@
                         @enderror
                     </div>
 
-                    {{-- Wali Kelas --}}
                     <div class="mb-3">
-                        <label for="wali_kelas_id" class="form-label">Wali Kelas</label>
-                        <select name="wali_kelas_id" id="wali_kelas_id"
-                            class="form-select @error('wali_kelas_id') is-invalid @enderror" required>
-                            <option value="">-- Pilih Wali Kelas --</option>
-                            @foreach ($gurus as $guru)
-                                <option value="{{ $guru->id }}">{{ $guru->username }}</option>
+                        <label for="pivot_guru_id" class="form-label">Pilih Guru & Tahun Ajar</label>
+                        <select name="pivot_guru_id[]" id="pivot_guru_id" class="form-select select2-guru" multiple
+                            required>
+                            @foreach ($pivotGuru as $pivot)
+                                <option value="{{ $pivot->id }}"
+                                    {{ collect(old('pivot_guru_id'))->contains($pivot->id) ? 'selected' : '' }}>
+                                    {{ $pivot->guru->username }} - {{ $pivot->tahun_ajar->tahun_ajar }}
+                                </option>
                             @endforeach
                         </select>
-                        @error('wali_kelas_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="mapel_id" class="form-label">Pilih Mata Pelajaran</label>
+                        <select name="mapel_id[]" id="mapel_id" class="form-select select2-mapel" multiple required>
+                            @foreach ($mapels as $mapel)
+                                <option value="{{ $mapel->id }}"
+                                    {{ collect(old('mapel_id'))->contains($mapel->id) ? 'selected' : '' }}>
+                                    {{ $mapel->nama_mapel }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="siswa_id" class="form-label">Masukkan Siswa</label>
+                        <select name="siswa_id[]" id="siswa_id" class="form-select select2-siswa" required multiple>
+                            @foreach ($siswas as $siswa)
+                                <option value="{{ $siswa->id }}"
+                                    {{ collect(old('siswa_id'))->contains($siswa->id) ? 'selected' : '' }}>
+                                    {{ $siswa->nama_siswa }} - {{ $siswa->nisn }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
 
                     {{-- Tombol Aksi --}}
@@ -122,3 +116,29 @@
         </div>
     </div>
 </x-admin>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<!-- Aktifkan Select2 -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        $('.select2-siswa').select2({
+            placeholder: 'Pilih Siswa',
+            allowClear: true,
+        })
+    })
+
+    document.addEventListener('DOMContentLoaded', function() {
+        $('.select2-guru').select2({
+            placeholder: 'Pilih Kombinasi Guru & Tahun Ajar',
+            allowClear: true,
+        })
+    })
+
+    document.addEventListener('DOMContentLoaded', function() {
+        $('.select2-mapel').select2({
+            placeholder: 'Pilih Mata Pelajaran',
+            allowClear: true,
+        })
+    })
+</script>

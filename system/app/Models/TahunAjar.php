@@ -25,7 +25,7 @@ class TahunAjar extends Model
 
     public function guru()
     {
-        return $this->belongsToMany(Guru::class, 'pivots_guru', 'tahun_ajar_id', 'guru_id')
+        return $this->belongsToMany(Guru::class, 'pivots_gurus', 'tahun_ajar_id', 'guru_id')
             ->withTimestamps()
             ->using(PivotGuru::class);
     }
