@@ -46,4 +46,11 @@ class Guru extends Authenticatable
             ->withTimestamps()
             ->using(PivotGuru::class);
     }
+
+    public function mapel()
+    {
+        return $this->belongsToMany(Mapel::class, 'guru_mapel', 'guru_id', 'mapel_id')
+            ->withTimestamps()
+            ->using(GuruMapel::class);
+    }
 }

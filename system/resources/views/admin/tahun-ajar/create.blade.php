@@ -7,7 +7,8 @@
             <div class="card-body">
                 <form action="{{ url('admin/tahun-ajar') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <input type="text" name="sekolah_id" id="sekolah_id" value="{{auth('admin')->user()->sekolah_id}}" hidden />
+                    <input type="text" name="sekolah_id" id="sekolah_id" value="{{ auth('admin')->user()->sekolah_id }}"
+                        hidden />
                     @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul>
@@ -23,8 +24,20 @@
                         <label for="tahun_ajar" class="form-label">Tahun Ajar</label>
                         <input type="text" name="tahun_ajar" id="tahun_ajar"
                             class="form-control @error('tahun_ajar') is-invalid @enderror"
-                            value="{{ old('tahun_ajar') }}" placeholder="Contoh: 2024/2025">
+                            value="{{ old('tahun_ajar') }}" placeholder="Contoh: 2025">
                         @error('tahun_ajar')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    {{-- Semester --}}
+                    <div class="mb-3">
+                        <label for="semester" class="form-label">Semester</label>
+                        <select name="semester" id="semester" class="form-select" required>
+                            <option value="Ganjil" {{ old('semester') == 'Ganjil' ? 'selected' : '' }}>Ganjil</option>
+                            <option value="Genap" {{ old('semester') == 'Genap' ? 'selected' : '' }}>Genap</option>
+                        </select>
+                        @error('semester')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
@@ -32,20 +45,19 @@
                     {{-- Deskripsi --}}
                     <div class="mb-3">
                         <label for="deskripsi" class="form-label">Deskripsi</label>
-                        <input type="text" name="deskripsi" id="deskripsi"
-                        class="form-control">
+                        <input type="text" name="deskripsi" id="deskripsi" class="form-control">
                         @error('deskripsi')
-                            <div class="invalid-feedback">{{$message}}</div>
+                            <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
                     {{-- Status --}}
                     <div class="mb-3">
                         <label for="status" class="form-label">Status</label>
-                        <select name="status" id="status"
-                            class="form-select @error('status') is-invalid @enderror">
+                        <select name="status" id="status" class="form-select @error('status') is-invalid @enderror">
                             <option value="Aktif" {{ old('status') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
-                            <option value="Nonaktif" {{ old('status') == 'Nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+                            <option value="Nonaktif" {{ old('status') == 'Nonaktif' ? 'selected' : '' }}>Nonaktif
+                            </option>
                         </select>
                         @error('status')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -54,9 +66,10 @@
 
                     <div class="mb-3">
                         <label for="dokumen" class="form-label">Dokumen</label>
-                        <input type="file" name="dokumen" id="dokumen" class="form-control" placeholder="Drag or Import Dokumen PDF">
+                        <input type="file" name="dokumen" id="dokumen" class="form-control"
+                            placeholder="Drag or Import Dokumen PDF">
                         @error('dokumen')
-                            <div class="invalid-feedback">{{$message}}</div>
+                            <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 

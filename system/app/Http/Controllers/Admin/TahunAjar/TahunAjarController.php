@@ -29,23 +29,31 @@ class TahunAjarController extends Controller
         $request->validate([
             'sekolah_id' => 'required|exists:sekolahs,id',
             'tahun_ajar' => 'required|string|max:255',
+            'semester' => 'required|in:Ganjil,Genap',
             'deskripsi' => 'required|string',
             'dokumen' => 'required|mimes:pdf|max:4096',
             'status' => 'required|in:Aktif,Nonaktif',
         ]);
+
+        if ($request->status == 'Aktif') {
+            TahunAjar::where('sekolah_id', $request->sekolah_id)
+                ->where('status', 'Aktif')
+                ->update(['status' => 'Nonaktif']);
+        }
 
         $file = $request->file('dokumen');
         $fileName = 'tahun-ajar_' .  time() . '.' . $file->getClientOriginalExtension();
         $pathFile = realpath(base_path('../public/app')) . '/data-dokumen';
         $file->move($pathFile, $fileName);
 
-        $validated = [
-            'sekolah_id' => $request->input('sekolah_id'),
-            'tahun_ajar' => $request->input('tahun_ajar'),
-            'deskripsi' => $request->input('deskripsi'),
-            'dokumen' => $fileName,
-            'status' => $request->input('status')
-        ];
+        $validated = $request->only([
+            'sekolah_id',
+            'tahun_ajar',
+            'semester',
+            'deskripsi',
+            'dokumen',
+            'status'
+        ]);
 
         TahunAjar::create($validated);
 
@@ -70,6 +78,7 @@ class TahunAjarController extends Controller
         $request->validate([
             'sekolah_id' => 'required|exists:sekolahs,id',
             'tahun_ajar' => 'required|string',
+            'semester' => 'required|in:Ganjil,Genap',
             'deskripsi' => 'nullable|string',
             'dokumen' => 'nullable|mimes:pdf|max:4096',
             'status' => 'required|in:Aktif,Nonaktif',
@@ -77,12 +86,19 @@ class TahunAjarController extends Controller
 
         $targetPath = realpath(base_path('../public/app')) . '/data-dokumen';
 
-        $validateData = [
-            'sekolah_id' => $request->input('sekolah_id'),
-            'tahun_ajar' => $request->input('tahun_ajar'),
-            'deskripsi' => $request->input('deskripsi'),
-            'status' => $request->input('status'),
-        ];
+        $validateData = $request->only([
+            'sekolah_id',
+            'tahun_ajar',
+            'semester',
+            'deskripsi',
+            'status'
+        ]);
+
+        if ($request->status == 'Aktif') {
+            TahunAjar::where('sekolah_id', $request->sekolah_id)
+                ->where('status', 'Aktif')
+                ->update(['status' => 'Nonaktif']);
+        }
 
         if ($request->hasFile('dokumen')) {
             $file = $request->file('dokumen');
@@ -105,8 +121,11 @@ class TahunAjarController extends Controller
     {
         $tahunAjar = TahunAjar::findOrFail($id);
         $filePath = realpath(base_path('../public/app')) . '/data-dokumen';
-        if ($tahunAjar->dokumen && file_exists($filePath . '/data-dokumen'. $tahunAjar->dokumen)) {
+        if ($tahunAjar->dokumen && file_exists($filePath . '/data-dokumen' . $tahunAjar->dokumen)) {
             unlink($filePath . '/data-dokumen' . $tahunAjar->dokumen);
         }
+
+        $tahunAjar->delete();
+        return redirect('admin/tahun-ajar')->with('success', 'Tahun ajar berhasil dihapus.');
     }
 }

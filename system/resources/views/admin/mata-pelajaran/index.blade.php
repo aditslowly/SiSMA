@@ -36,7 +36,6 @@
                     <tr>
                         <th>No</th>
                         <th>Aksi</th>
-                        <th>Kode Mapel</th>
                         <th>Nama Mapel</th>
                         <th>Deskripsi</th>
                         <th>Guru</th>
@@ -60,10 +59,15 @@
                                     </button>
                                 </form>
                             </td>
-                            <td>{{ $item->kode_mapel }}</td>
                             <td>{{ $item->nama_mapel }}</td>
                             <td>{{ $item->deskripsi }}</td>
-                            <td>{{ $item->gurus ? $item->gurus->username : 'Belum ada guru' }}</td>
+                            <td>
+                                @forelse ($item->guru as $guru)
+                                    <span>{{$guru->username}}</span>
+                                @empty
+                                    <span class="text-muted">Tidak ada</span>
+                                @endforelse
+                            </td>
                         </tr>
                     @empty
                         <tr>

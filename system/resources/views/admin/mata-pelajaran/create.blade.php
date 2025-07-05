@@ -57,6 +57,22 @@
                         </div>
                     </div>
 
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="guru_id" class="form-label">Guru Pengampu</label>
+                            <select name="guru_id[]" id="guru_id"
+                                class="form-select select2-guru @error('guru_id') is-invalid @enderror" multiple
+                                required>
+                                @foreach ($gurus as $guru)
+                                    <option value="{{ $guru->id }}">{{ $guru->username }}</option>
+                                @endforeach
+                            </select>
+                            @error('guru_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
                     {{-- Tombol Aksi --}}
                     <div class="mt-4 d-flex justify-content-start gap-2">
                         <a href="{{ url('admin/mata-pelajaran') }}" class="btn btn-secondary">
@@ -71,3 +87,15 @@
         </div>
     </div>
 </x-admin>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<!-- Aktifkan Select2 -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        $('.select2-guru').select2({
+            placeholder: 'Pilih Guru',
+            allowClear: true,
+        })
+    })
+</script>

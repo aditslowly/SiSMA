@@ -12,7 +12,6 @@ use App\Models\PivotKelas;
 use App\Models\PivotMapel;
 use App\Models\PivotSiswa;
 use App\Models\Siswa;
-use App\Models\TahunAjar;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 
@@ -118,7 +117,6 @@ class KelasController extends Controller
 
         foreach ($kelas->pivot_guru as $pivotGuru) {
             foreach ($pivotGuru->pivot_kelas as $pivotKelas) {
-                // ✅ Cek apakah ini benar-benar pivot_kelas milik kelas ini
                 if ($pivotKelas->kelas_id === $kelas->id) {
                     $siswaList = $siswaList->merge($pivotKelas->siswa);
                 }

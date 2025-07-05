@@ -39,6 +39,7 @@
                         <th>No</th>
                         <th>Aksi</th>
                         <th>Tahun Ajaran</th>
+                        <th>Semester</th>
                         <th>Status</th>
                         <th>Dokumen</th>
                     </tr>
@@ -48,13 +49,16 @@
                         <tr>
                             <td>{{ $loop->iteration + ($tahunAjar->currentPage() - 1) * $tahunAjar->perPage() }}</td>
                             <td class="d-flex justify-content-center flex-wrap gap-1">
-                                <a href="{{ url('admin/tahun-ajar/show/' . $item->id) }}" class="btn btn-info btn-sm" title="Detail">
+                                <a href="{{ url('admin/tahun-ajar/show/' . $item->id) }}" class="btn btn-info btn-sm"
+                                    title="Detail">
                                     <i class="fs-5 ti ti-file-description"></i>
                                 </a>
-                                <a href="{{ url('admin/tahun-ajar/edit/' . $item->id) }}" class="btn btn-warning btn-sm" title="Edit">
+                                <a href="{{ url('admin/tahun-ajar/edit/' . $item->id) }}" class="btn btn-warning btn-sm"
+                                    title="Edit">
                                     <i class="fs-5 ti ti-edit"></i>
                                 </a>
-                                <form action="{{ url('admin/tahun-ajar/destroy/' . $item->id) }}" method="POST" class="d-inline delete-form">
+                                <form action="{{ url('admin/tahun-ajar/destroy/' . $item->id) }}" method="POST"
+                                    class="d-inline delete-form">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger btn-sm" title="Hapus">
@@ -63,13 +67,15 @@
                                 </form>
                             </td>
                             <td>{{ $item->tahun_ajar }}</td>
+                            <td>{{ $item->semester }}</td>
                             <td>
                                 <span class="badge {{ $item->status === 'Aktif' ? 'bg-success' : 'bg-danger' }}">
                                     {{ ucfirst($item->status) }}
                                 </span>
                             </td>
                             <td>
-                                <a href="{{url('public/app/data-dokumen/' . $item->dokumen)}}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                <a href="{{ url('public/app/data-dokumen/' . $item->dokumen) }}" target="_blank"
+                                    class="btn btn-outline-primary btn-sm">
                                     <i class=" ti ti-printer"></i> Cetak
                                 </a>
                             </td>
@@ -88,7 +94,8 @@
         <!-- Pagination -->
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3">
             <div class="mb-2 mb-md-0">
-                <span>Menampilkan {{ $tahunAjar->firstItem() ?? 0 }} sampai {{ $tahunAjar->lastItem() ?? 0 }} dari {{ $tahunAjar->total() ?? 0 }} data</span>
+                <span>Menampilkan {{ $tahunAjar->firstItem() ?? 0 }} sampai {{ $tahunAjar->lastItem() ?? 0 }} dari
+                    {{ $tahunAjar->total() ?? 0 }} data</span>
             </div>
             <div>
                 {{ $tahunAjar->links('pagination::bootstrap-5') }}

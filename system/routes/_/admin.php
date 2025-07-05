@@ -63,3 +63,4 @@ Route::post('tahun-ajar', [TahunAjarController::class, 'store'])->name('tahun-aj
 Route::get('tahun-ajar/edit/{id}', [TahunAjarController::class, 'edit']);
 Route::put('tahun-ajar/{id}', [TahunAjarController::class, 'update']);
 Route::get('tahun-ajar/show/{id}', [TahunAjarController::class, 'show']);
+Route::delete('tahun-ajar/destroy/{id}', [TahunAjarController::class, 'destroy'])->name('tahun-ajar.destroy');

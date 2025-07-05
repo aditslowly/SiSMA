@@ -29,7 +29,7 @@
                             @foreach ($tahunAjar as $tahun)
                                 <option value="{{ $tahun->id }}"
                                     {{ in_array($tahun->id, $selectedTahunAjar ?? []) ? 'selected' : '' }}>
-                                    {{ $tahun->tahun_ajar }}</option>
+                                    {{ $tahun->semester }}</option>
                             @endforeach
                         </select>
                     </div>

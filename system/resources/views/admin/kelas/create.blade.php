@@ -72,7 +72,7 @@
                             @foreach ($pivotGuru as $pivot)
                                 <option value="{{ $pivot->id }}"
                                     {{ collect(old('pivot_guru_id'))->contains($pivot->id) ? 'selected' : '' }}>
-                                    {{ $pivot->guru->username }} - {{ $pivot->tahun_ajar->tahun_ajar }}
+                                    {{ $pivot->guru->username }}
                                 </option>
                             @endforeach
                         </select>
