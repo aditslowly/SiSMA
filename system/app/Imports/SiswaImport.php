@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\Siswa;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
@@ -11,9 +12,9 @@ class SiswaImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
         return new Siswa([
+            'sekolah_id' => Auth::guard('admin')->user()->sekolah_id,
             'nisn' => $row['NISN'],
             'nis' => $row['NIS'],
-            'kelas_id' => null,
             'nama_siswa' => $row['Nama Siswa'],
             'jenis_pendaftaran' => $row['Jenis Pendaftaran'],
             'jalur_pendaftaran' => $row['Jalur Pendaftaran'],

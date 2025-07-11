@@ -1,4 +1,26 @@
 <x-master-admin>
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                title: 'Selamat Datang Kembali!',
+                text: '{{ session('success') }}',
+                icon: 'success',
+                confirmButtonText: 'OK',
+            })
+        </script>
+    @endif
+
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                title: 'Gagal Masuk! Perhatikan Username dan Password Anda',
+                text: '{{ session('error') }}',
+                icon: 'error',
+                confirmButtonText: 'OK',
+            })
+        </script>
+    @endif
+
     <div class="container-fluid p-4">
         <div class="row g-3 justify-content-center">
             <!-- Copywriting dengan Card -->
@@ -6,10 +28,11 @@
                 <div class="col-md-8">
                     <div class="card shadow">
                         <div class="card-body text-center">
-                            <h4 class="fw-bold">Selamat Datang di Dashboard {{$masterAdmin->username}} 👋</h4>
+                            <h4 class="fw-bold">Selamat Datang di Dashboard {{ $masterAdmin->username }} 👋</h4>
                             <p class="mb-0">
                                 Kelola seluruh sekolah dan admin secara terpusat.
-                                Dengan sistem ini, Anda dapat mengawasi aktivitas dan perkembangan pendidikan dari seluruh sekolah dalam satu platform.
+                                Dengan sistem ini, Anda dapat mengawasi aktivitas dan perkembangan pendidikan dari
+                                seluruh sekolah dalam satu platform.
                             </p>
                         </div>
                     </div>
@@ -37,7 +60,8 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </x-master-admin>

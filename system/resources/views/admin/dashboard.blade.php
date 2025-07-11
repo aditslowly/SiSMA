@@ -3,7 +3,7 @@
         <script>
             Swal.fire({
                 title: 'Selamat Datang Kembali!',
-                text: '{{session('success')}}',
+                text: '{{ session('success') }}',
                 icon: 'success',
                 confirmButtonText: 'OK',
             })
@@ -12,10 +12,12 @@
 
     @if (session('error'))
         <script>
-            title: 'Gagal Masuk!',
-            text: '{{session('error')}}',
-            icon: 'error',
-            confirmButtonText: 'Coba Lagi',
+            Swal.fire({
+                title: 'Gagal Masuk! Perhatikan Username dan Password Anda',
+                text: '{{ session('error') }}',
+                icon: 'error',
+                confirmButtonText: 'Coba Lagi',
+            })
         </script>
     @endif
 
@@ -26,7 +28,7 @@
                     <div class="card shadow">
                         <div class="card-body text-center">
                             <h4 class="fw-bold">Selamat Datang di Sistem Informasi Akademik</h4>
-                            <h4 class="fw-bold">{{Auth::user()->username}} 👋</h4>
+                            <h4 class="fw-bold">{{ Auth::user()->username }} 👋</h4>
                             <p class="mb-0">
                                 Apa yang akan kamu lakukan hari ini?
                             </p>
