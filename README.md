@@ -31,5 +31,5 @@ SIAKAD SISMA adalah aplikasi **Sistem Informasi Akademik Sekolah Menengah** berb
 
 1. **Clone Repo**
    ```bash
-   git clone https://github.com/namakamu/siakad_sisma.git
+   git clone https://github.com/aditslowly/siakad_sisma.git
    cd siakad_sisma
