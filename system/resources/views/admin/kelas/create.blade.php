@@ -66,7 +66,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="pivot_guru_id" class="form-label">Pilih Guru & Tahun Ajar</label>
+                        <label for="pivot_guru_id" class="form-label">Pilih Guru</label>
                         <select name="pivot_guru_id[]" id="pivot_guru_id" class="form-select select2-guru" multiple
                             required>
                             @foreach ($pivotGuru as $pivot)
